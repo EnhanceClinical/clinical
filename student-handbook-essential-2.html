@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Handbook — Essential Program | Enhance Clinical Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #12A89E;
+    --teal-dark: #0a8a81;
+    --teal-light: #12A89E;
+    --teal-pale: #E1F1F0;
+    --gold: #FFD699;
+    --gold-light: #FFF3DC;
+    --charcoal: #221F1F;
+    --mid: #444444;
+    --light: #f7f9f8;
+    --white: #ffffff;
+    --warn: #c0392b;
+    --warn-light: #fdf0ef;
+    --border: #C8E8E6;
+    --sidebar-w: 280px;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--light);
+    color: var(--charcoal);
+    display: flex;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--charcoal);
+    color: var(--white);
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: transform .3s ease;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+
+  .sidebar-logo .brand {
+    font-family: 'Cabin', sans-serif;
+    font-size: 18px;
+    color: #12A89E;
+    letter-spacing: .5px;
+  }
+
+  .sidebar-logo .sub {
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .progress-bar-wrap {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,.15);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal-light), var(--gold));
+    border-radius: 2px;
+    transition: width .5s ease;
+    width: 0%;
+  }
+
+  .progress-pct {
+    font-size: 12px;
+    color: var(--teal-light);
+    margin-top: 6px;
+    font-weight: 600;
+  }
+
+  nav { flex: 1; padding: 12px 0; }
+
+  .nav-section-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.3);
+    padding: 16px 24px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: background .2s;
+    border-left: 3px solid transparent;
+    font-size: 13.5px;
+    color: rgba(255,255,255,.7);
+    user-select: none;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,.06); color: var(--white); }
+
+  .nav-item.active {
+    background: rgba(58,158,142,.15);
+    border-left-color: var(--teal-light);
+    color: var(--white);
+  }
+
+  .nav-item.completed { color: var(--teal-light); }
+
+  .nav-check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 10px;
+    transition: all .3s;
+  }
+
+  .nav-item.completed .nav-check {
+    background: var(--teal-light);
+    border-color: var(--teal-light);
+    color: var(--white);
+  }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .handbook-header {
+    background: linear-gradient(135deg, #0a8a81 0%, #12A89E 100%);
+    color: var(--white);
+    padding: 60px 64px 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .handbook-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.05);
+  }
+
+  .handbook-header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: 120px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(200,169,110,.1);
+  }
+
+  .header-tag {
+    display: inline-block;
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 20px;
+    padding: 5px 16px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: rgba(255,255,255,.9);
+  }
+
+  .header-title {
+    font-family: 'Cabin', sans-serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    position: relative;
+  }
+
+  .header-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,.75);
+    max-width: 560px;
+    margin-bottom: 32px;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+  }
+
+  .meta-value {
+    font-size: 14px;
+    color: rgba(255,255,255,.9);
+    font-weight: 500;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    display: none;
+    padding: 48px 64px;
+    max-width: 900px;
+    animation: fadeIn .3s ease;
+  }
+
+  .section.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .section-icon {
+    width: 52px; height: 52px;
+    background: var(--teal-pale);
+    border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-family: 'Cabin', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--teal-dark);
+    line-height: 1.2;
+  }
+
+  .section-desc {
+    font-size: 14px;
+    color: var(--mid);
+    margin-top: 4px;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  h3 {
+    font-family: 'Cabin', sans-serif;
+    font-size: 20px;
+    color: var(--teal-dark);
+    margin: 32px 0 12px;
+  }
+
+  h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin: 24px 0 8px;
+  }
+
+  p { margin-bottom: 14px; color: var(--mid); }
+
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 16px;
+  }
+
+  li {
+    color: var(--mid);
+    margin-bottom: 6px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .tag-teal { background: var(--teal-pale); color: var(--teal-dark); }
+  .tag-gold { background: var(--gold-light); color: #7a5c2e; }
+  .tag-warn { background: var(--warn-light); color: var(--warn); }
+
+  .highlight-box {
+    background: var(--teal-pale);
+    border-left: 4px solid var(--teal);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .warn-box {
+    background: var(--warn-light);
+    border-left: 4px solid var(--warn);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  .warn-box p, .warn-box li { color: #7a1f1a; }
+
+  .warn-box strong { color: var(--warn); }
+
+  .gold-box {
+    background: var(--gold-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+
+  /* ── VALUES GRID ── */
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .value-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    transition: box-shadow .2s;
+  }
+
+  .value-card:hover { box-shadow: 0 4px 20px rgba(42,124,111,.12); }
+
+  .value-icon { font-size: 28px; margin-bottom: 10px; }
+
+  .value-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--teal-dark);
+  }
+
+  .value-desc {
+    font-size: 12px;
+    color: var(--mid);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* ── LOCATION CARDS ── */
+  .location-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .location-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    border-top: 3px solid var(--teal);
+  }
+
+  .location-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--teal-dark);
+    margin-bottom: 6px;
+  }
+
+  .location-state {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .location-detail {
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.8;
+  }
+
+  .location-feature {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--teal-pale);
+    color: var(--teal-dark);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-top: 10px;
+    margin-right: 4px;
+  }
+
+  /* ── HEALTH DISCLOSURE ── */
+  .disclosure-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .disclosure-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .disclosure-item input[type="checkbox"] {
+    margin-top: 3px;
+    width: 16px; height: 16px;
+    accent-color: var(--teal);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .disclosure-label {
+    font-size: 13.5px;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+
+  /* ── FLOWCHART ── */
+  .flowchart {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 24px 0;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 44px;
+    bottom: -8px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .flow-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: var(--white);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-content {
+    flex: 1;
+    padding-bottom: 24px;
+  }
+
+  .flow-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+
+  .flow-desc {
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  .flow-urgent .flow-num { background: var(--warn); }
+
+  /* ── SCENARIOS ── */
+  .scenario {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+
+  .scenario-header {
+    padding: 18px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: background .2s;
+    user-select: none;
+  }
+
+  .scenario-header:hover { background: var(--light); }
+
+  .scenario-icon {
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .scenario-title { font-weight: 600; font-size: 14px; flex: 1; }
+  .scenario-chevron { color: var(--mid); font-size: 12px; transition: transform .3s; }
+  .scenario.open .scenario-chevron { transform: rotate(180deg); }
+
+  .scenario-body {
+    display: none;
+    padding: 0 24px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .scenario.open .scenario-body { display: block; }
+
+  .scenario-situation {
+    background: var(--light);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0 12px;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--mid);
+  }
+
+  .scenario-action {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .scenario-action strong { color: var(--teal-dark); }
+
+  /* ── ACKNOWLEDGEMENT ── */
+  .ack-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 10px;
+    transition: border-color .2s, background .2s;
+  }
+
+  .ack-item.checked {
+    border-color: var(--teal);
+    background: var(--teal-pale);
+  }
+
+  .ack-item input[type="checkbox"] {
+    width: 18px; height: 18px;
+    accent-color: var(--teal);
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+  }
+
+  .ack-text { font-size: 14px; color: var(--charcoal); line-height: 1.6; }
+
+  /* ── NAVIGATION BUTTONS ── */
+  .section-nav {
+    display: flex;
+    gap: 12px;
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--teal);
+    color: var(--white);
+  }
+
+  .btn-primary:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: var(--white);
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
+  }
+
+  .btn-secondary:hover { background: var(--teal-pale); }
+
+  .btn-success {
+    background: #27ae60;
+    color: var(--white);
+  }
+
+  .btn-success:hover { background: #229954; }
+
+  .btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  /* ── COMPLETION ── */
+  .completion-screen {
+    text-align: center;
+    padding: 80px 40px;
+  }
+
+  .completion-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .completion-title {
+    font-family: 'Cabin', sans-serif;
+    font-size: 36px;
+    color: var(--teal-dark);
+    margin-bottom: 12px;
+  }
+
+  .completion-sub { color: var(--mid); font-size: 16px; margin-bottom: 32px; }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--teal);
+    color: var(--white);
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 12px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--mid);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--light); }
+
+  /* ── MOBILE ── */
+  .mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 200;
+    background: var(--teal);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 44px; height: 44px;
+    font-size: 18px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); }
+    #sidebar.open { transform: translateX(0); }
+    #main { margin-left: 0; }
+    .mobile-toggle { display: flex; }
+    .section { padding: 32px 24px; }
+    .handbook-header { padding: 40px 24px 36px; }
+    .disclosure-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── INTRO CARD ── */
+  .intro-card {
+    background: linear-gradient(135deg, var(--teal-pale), var(--gold-light));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .intro-quote {
+    font-family: 'Cabin', sans-serif;
+    font-size: 20px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--teal-dark);
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+
+  .intro-attribution {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    #sidebar, .mobile-toggle, .section-nav, .btn, .progress-bar-wrap { display: none !important; }
+    #main { margin-left: 0 !important; }
+    body { background: white; }
+    .section { display: block !important; padding: 20px !important; }
+    .section:not(#sec-complete) { display: none !important; }
+    #sec-complete { display: block !important; }
+    #summaryCard { border: 2px solid #12A89E !important; page-break-inside: avoid; }
+    #submitBanner { display: none !important; }
+    .completion-icon { font-size: 36px; }
+  }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:14px;opacity:.7;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.7">
+      <span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.6);font-family:Nunito,sans-serif">← Clinical Hub</span>
+    </a>
+    <div class="brand">Essential Program</div>
+    <div class="sub">Student Handbook</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">Your Progress</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-pct" id="progressPct">0% complete</div>
+  </div>
+
+  <nav>
+    <div class="nav-section-label">Getting Started</div>
+    <div class="nav-item active" onclick="showSection('welcome')" id="nav-welcome">
+      <div class="nav-check" id="chk-welcome"></div>
+      Welcome
+    </div>
+    <div class="nav-item" onclick="showSection('about')" id="nav-about">
+      <div class="nav-check" id="chk-about"></div>
+      About Enhance Physio
+    </div>
+
+    <div class="nav-section-label">Your Placement</div>
+    <div class="nav-item" onclick="showSection('locations')" id="nav-locations">
+      <div class="nav-check" id="chk-locations"></div>
+      Sites & Locations
+    </div>
+    <div class="nav-item" onclick="showSection('expectations')" id="nav-expectations">
+      <div class="nav-check" id="chk-expectations"></div>
+      Student Expectations
+    </div>
+    <div class="nav-item" onclick="showSection('supervision')" id="nav-supervision">
+      <div class="nav-check" id="chk-supervision"></div>
+      Supervision & Scope
+    </div>
+    <div class="nav-item" onclick="showSection('clinical')" id="nav-clinical">
+      <div class="nav-check" id="chk-clinical"></div>
+      Clinical Services
+    </div>
+
+    <div class="nav-section-label">Safety & Wellbeing</div>
+    <div class="nav-item" onclick="showSection('health')" id="nav-health">
+      <div class="nav-check" id="chk-health"></div>
+      Health Disclosure
+    </div>
+    <div class="nav-item" onclick="showSection('safety')" id="nav-safety">
+      <div class="nav-check" id="chk-safety"></div>
+      WHS & Safety
+    </div>
+    <div class="nav-item" onclick="showSection('professional')" id="nav-professional">
+      <div class="nav-check" id="chk-professional"></div>
+      Professional Conduct
+    </div>
+
+    <div class="nav-section-label">Policies</div>
+    <div class="nav-item" onclick="showSection('confidentiality')" id="nav-confidentiality">
+      <div class="nav-check" id="chk-confidentiality"></div>
+      Privacy & Confidentiality
+    </div>
+    <div class="nav-item" onclick="showSection('social')" id="nav-social">
+      <div class="nav-check" id="chk-social"></div>
+      Social Media & Comms
+    </div>
+
+    <div class="nav-section-label">Incidents</div>
+    <div class="nav-item" onclick="showSection('reporting')" id="nav-reporting">
+      <div class="nav-check" id="chk-reporting"></div>
+      Reporting & Flowchart
+    </div>
+    <div class="nav-item" onclick="showSection('scenarios')" id="nav-scenarios">
+      <div class="nav-check" id="chk-scenarios"></div>
+      Scenarios
+    </div>
+
+    <div class="nav-section-label">Final Step</div>
+    <div class="nav-item" onclick="showSection('acknowledgement')" id="nav-acknowledgement">
+      <div class="nav-check" id="chk-acknowledgement"></div>
+      Acknowledgement
+    </div>
+  </nav>
+</nav>
+
+<!-- MAIN -->
+<main id="main">
+
+  <!-- HEADER (always visible) -->
+  <div class="handbook-header">
+    <div class="header-tag">Essential Program · Undergraduate & Postgraduate</div>
+    <h1 class="header-title">Student Clinical Placement<br><em>Handbook</em></h1>
+    <p class="header-sub">Everything you need to know before, during, and after your placement at Enhance Physio. Read each section and complete the acknowledgement to begin.</p>
+    <div class="header-meta">
+      <div class="meta-item">
+        <span class="meta-label">Program</span>
+        <span class="meta-value">Essential Stream</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Students</span>
+        <span class="meta-value">Physiotherapy, Exercise Physiology & Allied Health</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Version</span>
+        <span class="meta-value">2025–26</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SECTION: WELCOME ══════════ -->
+  <section class="section active" id="sec-welcome">
+    <div class="section-header">
+      <div class="section-icon">👋</div>
+      <div>
+        <div class="section-title">Welcome to Enhance Physio</div>
+        <div class="section-desc">A message from our Clinical Director</div>
+      </div>
+    </div>
+
+    <div class="intro-card">
+      <div class="intro-quote">"We are proud to invest in the next generation of clinicians. Your time here is more than observation — it is an opportunity to grow professionally, challenge yourself, and contribute meaningfully to patient care."</div>
+      <div class="intro-attribution">— Clinical Director, Enhance Physiotherapy</div>
+    </div>
+
+    <p>Welcome to the Enhance Physio Essential Program. This handbook has been designed to ensure you are fully prepared for your placement — practically, professionally, and personally.</p>
+
+    <p>We take our responsibility as a clinical educator seriously. This means providing you with rich learning experiences, structured supervision, and honest feedback. In return, we ask that you uphold the professional and ethical standards that our patients, staff, and community expect.</p>
+
+    <p>Please read every section of this handbook carefully. At the end, you will be asked to acknowledge that you have read and understood the content. This is a requirement before your placement can begin and works alongside your signed Student Declaration Form.</p>
+
+    <div class="highlight-box">
+      <p><strong>How to use this handbook:</strong> Work through each section using the navigation on the left. Mark each section complete as you go. Your progress is tracked at the top of the sidebar. You must complete all sections and the final acknowledgement before your placement commences.</p>
+    </div>
+
+    <h3>Before Your Placement Starts</h3>
+    <p>You should ensure the following are completed before your first day:</p>
+    <ul>
+      <li>This handbook is read in full and acknowledged</li>
+      <li>Signed Student Declaration Form returned to your supervisor</li>
+      <li>Valid student ID and university placement paperwork submitted</li>
+      <li>Any required vaccinations or pre-placement health checks completed (per your university requirements)</li>
+      <li>Insurance confirmed with your educational institution</li>
+      <li>You have contacted your site supervisor to confirm your start date, time, and what to bring</li>
+    </ul>
+
+    <div class="section-nav">
+      <button class="btn btn-primary" onclick="completeAndNext('welcome', 'about')">Next: About Enhance Physio →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: ABOUT ══════════ -->
+  <section class="section" id="sec-about">
+    <div class="section-header">
+      <div class="section-icon">🏥</div>
+      <div>
+        <div class="section-title">About Enhance Physio</div>
+        <div class="section-desc">Our mission, vision, values, and approach to care</div>
+      </div>
+    </div>
+
+    <h3>Our Mission</h3>
+    <div class="highlight-box">
+      <p style="font-family:'Cabin',sans-serif; font-size:17px; color:var(--teal-dark); font-style:italic;">To Enhance You, Your Health, and Our Community — helping 50,000 people live happier, healthier, more active lives.</p>
+    </div>
+
+    <h3>Who We Are</h3>
+    <p>Enhance Physio is a growing multi-site allied health practice operating across New South Wales, Victoria, and Queensland. With six locations and a team of 60+ dedicated professionals, we are committed to raising the standard of physiotherapy in Australia.</p>
+
+    <p>We serve patients of all ages — from toddlers to older adults — across a broad spectrum of conditions, funding streams, and clinical specialties. Our services include physiotherapy, exercise physiology, women's health, vestibular rehabilitation, paediatric physiotherapy, podiatry, nutrition, and massage therapy.</p>
+
+    <h3>The Triad Approach</h3>
+    <p>Every patient receives care through our proven <strong>Triad Approach</strong>:</p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin:20px 0;">
+      <div class="card">
+        <div class="card-title">🤲 Hands-On Therapy</div>
+        <p style="font-size:13px; margin:0;">World-class manual therapy, tailored to each patient's presentation and goals.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">🏃 Exercise Programs</div>
+        <p style="font-size:13px; margin:0;">Individually tailored, evidence-based exercise for lasting results.</p>
+      </div>
+      <div class="card">
+        <div class="card-title">📚 Practical Education</div>
+        <p style="font-size:13px; margin:0;">Empowering patients with the knowledge to self-manage and prevent recurrence.</p>
+      </div>
+    </div>
+
+    <h3>The Red Carpet Experience</h3>
+    <p>Every patient at Enhance Physio receives what we call the <strong>Red Carpet Experience</strong> — genuine care, clinical excellence, and a team dedicated to helping them become the best version of themselves. As a student, you are expected to contribute to this experience, not just observe it.</p>
+
+    <h3>Our Core Values</h3>
+    <div class="values-grid">
+      <div class="value-card">
+        <div class="value-icon">❤️</div>
+        <div class="value-name">Empathy</div>
+        <div class="value-desc">We listen, understand, and genuinely care about each person's journey.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">⭐</div>
+        <div class="value-name">Quality</div>
+        <div class="value-desc">Evidence-based, consistent, and clinically excellent care every time.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🤝</div>
+        <div class="value-name">Professionalism</div>
+        <div class="value-desc">We hold ourselves to the highest ethical and professional standards.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🔗</div>
+        <div class="value-name">Collaboration</div>
+        <div class="value-desc">We work together — as a team and with our patients — to achieve shared goals.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-icon">🌱</div>
+        <div class="value-name">Community</div>
+        <div class="value-desc">We exist to serve and strengthen the communities around us.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('welcome')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('about', 'locations')">Next: Sites & Locations →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: LOCATIONS ══════════ -->
+  <section class="section" id="sec-locations">
+    <div class="section-header">
+      <div class="section-icon">📍</div>
+      <div>
+        <div class="section-title">Sites & Locations</div>
+        <div class="section-desc">Our six clinic locations, contact details, and what to expect on-site</div>
+      </div>
+    </div>
+
+    <p>You will be placed at one or more of our six sites. Familiarise yourself with your allocated location(s) before your start date. Always confirm your specific site with your Supervisor in advance.</p>
+
+    <div class="location-grid">
+
+      <div class="location-card">
+        <div class="location-name">Albury</div>
+        <div class="location-state">NSW</div>
+        <div class="location-detail">
+          550 Smollett St, Albury NSW 2640<br>
+          📞 (02) 6041 3609
+        </div>
+        <span class="location-feature">🏊 Hydrotherapy</span>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+      <div class="location-card">
+        <div class="location-name">Lavington</div>
+        <div class="location-state">NSW</div>
+        <div class="location-detail">
+          346 Griffith Rd, Lavington NSW 2641<br>
+          📞 (02) 6046 9269
+        </div>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+      <div class="location-card">
+        <div class="location-name">Wodonga</div>
+        <div class="location-state">VIC</div>
+        <div class="location-detail">
+          165 Lawrence St, Wodonga VIC 3690<br>
+          📞 (02) 6060 2403
+        </div>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+      <div class="location-card">
+        <div class="location-name">Mulgrave</div>
+        <div class="location-state">VIC</div>
+        <div class="location-detail">
+          439 Police Road, Mulgrave VIC 3170<br>
+          📞 (03) 9795 0668
+        </div>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+      <div class="location-card">
+        <div class="location-name">Hope Island</div>
+        <div class="location-state">QLD</div>
+        <div class="location-detail">
+          24B/340 Hope Island Rd, Hope Island QLD 4212<br>
+          📞 (07) 5522 9577
+        </div>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+      <div class="location-card">
+        <div class="location-name">Mudgeeraba</div>
+        <div class="location-state">QLD</div>
+        <div class="location-detail">
+          50 Railway St, Mudgeeraba QLD 4213<br>
+          📞 (07) 5522 9577
+        </div>
+        <span class="location-feature">👥 Groups</span>
+      </div>
+
+    </div>
+
+    <h3>Parking</h3>
+    <p>Parking availability varies by site. Contact your Supervisor before your first day to confirm the best parking option for your location. Do not use designated patient parking bays.</p>
+
+    <h3>Travel Between Sites</h3>
+    <p>On occasion, students may be required to travel between sites (e.g. Albury, Lavington, and Wodonga operate in a cluster). If inter-site travel is required during your placement:</p>
+    <ul>
+      <li>Your Supervisor will inform you in advance</li>
+      <li>Travel is not reimbursed unless agreed in writing prior to commencement</li>
+      <li>You are responsible for your own transport and must hold a valid licence if driving</li>
+      <li>You must never transport patients in your personal vehicle</li>
+      <li>Travel time does not count as supervised clinical hours unless explicitly confirmed by your Supervisor</li>
+    </ul>
+
+    <h3>Hydrotherapy</h3>
+    <div class="gold-box">
+      <p><strong>Hydrotherapy is available at select sites (e.g. Albury).</strong> If your placement involves hydrotherapy, additional requirements apply:</p>
+      <ul>
+        <li>You must disclose any relevant skin conditions, wounds, or contraindications in your health disclosure</li>
+        <li>Appropriate swimwear must be worn at all times — no exceptions</li>
+        <li>You must not enter the pool unless directed by your Supervisor</li>
+        <li>Hydrotherapy patient groups require additional supervision — you are an assistant, not a lead clinician</li>
+        <li>Patient privacy and dignity must be maintained throughout all pool interactions</li>
+      </ul>
+    </div>
+
+    <h3>Group Exercise Programs</h3>
+    <p>All sites facilitate group exercise programs. As a student, your role in groups is to assist under direct supervision. You may be asked to lead warm-up activities or guide patients through exercises only once explicitly authorised by your Supervisor.</p>
+
+    <h3>Key Contacts</h3>
+    <table>
+      <tr><th>Role</th><th>Responsibility</th><th>When to Contact</th></tr>
+      <tr><td><strong>Your Supervisor</strong></td><td>Day-to-day clinical oversight at your site</td><td>All clinical and day-to-day queries</td></tr>
+      <tr><td><strong>Clinical Lead</strong></td><td>Senior clinician at your site</td><td>If Supervisor unavailable; clinical escalation</td></tr>
+      <tr><td><strong>Clinical Director</strong></td><td>Organisational clinical governance</td><td>Formal complaints, serious incidents, policy matters</td></tr>
+      <tr><td><strong>University Coordinator</strong></td><td>Your academic placement liaison</td><td>Academic requirements, hours, assessments</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <p><strong>Important:</strong> All formal communications regarding your placement — including any concerns, complaints, or incidents — must include your Clinical Lead or Clinical Director. Do not attempt to resolve significant issues between yourself and a single staff member alone.</p>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('about')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('locations', 'expectations')">Next: Student Expectations →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: EXPECTATIONS ══════════ -->
+  <section class="section" id="sec-expectations">
+    <div class="section-header">
+      <div class="section-icon">📋</div>
+      <div>
+        <div class="section-title">Student Expectations</div>
+        <div class="section-desc">What we expect from you — and what you can expect from us</div>
+      </div>
+    </div>
+
+    <h3>Attendance & Punctuality</h3>
+    <ul>
+      <li>Arrive on time — or early. Punctuality is a professional expectation, not a preference.</li>
+      <li>If you are unwell or unable to attend, you must contact your Supervisor <em>before</em> your shift begins — not after.</li>
+      <li>Absences must be reported to both your Supervisor and your university placement coordinator.</li>
+      <li>Chronic lateness or unexplained absences may result in your placement being terminated.</li>
+    </ul>
+
+    <h3>Dress Code & Presentation</h3>
+    <ul>
+      <li>Neat, professional clinical attire at all times. No torn, overly casual, or revealing clothing.</li>
+      <li>Closed-toe shoes with non-slip soles (mandatory for patient safety).</li>
+      <li>Hair tied back when providing or assisting with patient care.</li>
+      <li>Nails kept short and clean. No strong perfume or cologne.</li>
+      <li>Name badge or identification to be worn visibly at all times.</li>
+      <li>Enhance Physio branded clothing, if provided, must be worn appropriately.</li>
+    </ul>
+
+    <h3>Mobile Phone Use</h3>
+    <ul>
+      <li>Personal phones must be on silent during all clinical hours.</li>
+      <li>No personal calls during patient contact time.</li>
+      <li>Photography and video recording on clinic premises is strictly prohibited without written authorisation. This includes recording patients, staff, or any clinical environment.</li>
+      <li>Phones may be used during supervised breaks in non-clinical areas only.</li>
+    </ul>
+
+    <h3>Your Dual Obligation</h3>
+    <div class="highlight-box">
+      <p>You are bound by <strong>two sets of requirements simultaneously</strong>: those of your educational institution and those of Enhance Physiotherapy. Where any conflict arises, you must notify both parties immediately. One set of requirements does not override the other — you must satisfy both.</p>
+    </div>
+
+    <h3>Expectations of Enhance Physio to You</h3>
+    <p>In return, Enhance Physio commits to:</p>
+    <ul>
+      <li>Providing structured supervision from a qualified clinician</li>
+      <li>Giving honest, timely, and constructive feedback</li>
+      <li>Offering exposure to a diverse range of clinical presentations</li>
+      <li>Treating you with dignity and professionalism</li>
+      <li>Maintaining a safe working environment</li>
+      <li>Communicating any concerns about your performance promptly and fairly</li>
+    </ul>
+
+    <div class="warn-box">
+      <p><strong>Student Wellbeing:</strong> Enhance Physiotherapy is not your treating healthcare provider. Students are not entitled to complimentary or discounted clinical treatment from Enhance Physio staff. If you sustain an injury or require treatment, you must seek care through your own healthcare provider. See the Health Disclosure section for more information.</p>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('locations')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('expectations', 'supervision')">Next: Supervision & Scope →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: SUPERVISION ══════════ -->
+  <section class="section" id="sec-supervision">
+    <div class="section-header">
+      <div class="section-icon">👁️</div>
+      <div>
+        <div class="section-title">Supervision & Scope of Practice</div>
+        <div class="section-desc">Understanding your boundaries as a student clinician</div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>Core Rule:</strong> You must never provide patient care, treatment, or clinical advice without the explicit supervision or delegation of your qualified Supervisor. This is non-negotiable and applies at all times, including when your Supervisor is briefly out of the room.</p>
+    </div>
+
+    <h3>What Supervision Means</h3>
+    <p>Supervision at Enhance Physio operates on a spectrum. Your Supervisor will clarify your level at each stage:</p>
+
+    <table>
+      <tr><th>Level</th><th>Description</th><th>Student Action</th></tr>
+      <tr><td><strong>Direct</strong></td><td>Supervisor is physically present and watching</td><td>Proceed only with verbal approval given in the moment</td></tr>
+      <tr><td><strong>Proximate</strong></td><td>Supervisor is nearby and immediately available</td><td>May proceed with delegated tasks; call for help if uncertain</td></tr>
+      <tr><td><strong>Indirect</strong></td><td>Supervisor available but not physically present</td><td>Only for clearly delegated, low-risk tasks — never assessment or treatment decisions</td></tr>
+    </table>
+
+    <h3>What You May Do</h3>
+    <ul>
+      <li>Observe clinical assessments and treatments</li>
+      <li>Assist with tasks explicitly delegated by your Supervisor</li>
+      <li>Guide group exercise participants through prescribed exercises (when authorised)</li>
+      <li>Assist with patient transfers and mobility (when trained and supervised)</li>
+      <li>Prepare equipment and treatment spaces</li>
+      <li>Document under Supervisor review and co-signature</li>
+    </ul>
+
+    <h3>What You Must NOT Do</h3>
+    <ul>
+      <li>Provide assessment findings or clinical diagnoses to patients</li>
+      <li>Give clinical advice or treatment recommendations without Supervisor approval</li>
+      <li>Modify a treatment plan without discussing with your Supervisor</li>
+      <li>Perform any manual therapy techniques without direct supervision and explicit authorisation</li>
+      <li>Discuss other patients' clinical details with the patient you are treating</li>
+      <li>Answer billing, insurance, or medico-legal questions from patients</li>
+    </ul>
+
+    <h3>When You Are Uncertain</h3>
+    <div class="highlight-box">
+      <p><strong>If in doubt — stop and ask.</strong> Asking for clarification is a sign of professional maturity, not weakness. There is no clinical situation where it is safer to guess than to ask. Your Supervisor expects you to seek guidance when uncertain. Failure to do so when uncertain is a breach of your obligations.</p>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('expectations')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('supervision', 'clinical')">Next: Clinical Services →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: CLINICAL SERVICES ══════════ -->
+  <section class="section" id="sec-clinical">
+    <div class="section-header">
+      <div class="section-icon">🩺</div>
+      <div>
+        <div class="section-title">Clinical Services</div>
+        <div class="section-desc">What you may encounter across our services and sites</div>
+      </div>
+    </div>
+
+    <p>Enhance Physio operates across a broad range of allied health disciplines. Depending on your site and university program, you may be exposed to some or all of the following:</p>
+
+    <div class="card">
+      <div class="card-title">💪 Physiotherapy <span class="tag tag-teal">Core</span></div>
+      <p>Assessment and treatment of musculoskeletal, neurological, post-surgical, and sports conditions. Includes manual therapy, dry needling, taping, and rehabilitation.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏋️ Exercise Physiology <span class="tag tag-teal">Core</span></div>
+      <p>Tailored exercise prescriptions for injury rehabilitation, chronic disease management, and performance. Students from EP programs will have specific placement objectives aligned with their accreditation.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🌊 Hydrotherapy <span class="tag tag-gold">Selected Sites</span></div>
+      <p>Aquatic physiotherapy for neurological, orthopaedic, and pain management presentations. Specific safety and conduct requirements apply — see Locations section.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👥 Group Programs <span class="tag tag-gold">All Sites</span></div>
+      <p>Supervised exercise classes including clinical Pilates, falls prevention, cardiac and pulmonary rehab, and general strength programs. Students assist under direct supervision.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👶 Paediatric Physiotherapy <span class="tag tag-gold">Selected Sites</span></div>
+      <p>Specialised care for children. Additional professional obligations around safeguarding, communication with parents/guardians, and consent apply when working with minors.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🧠 Vestibular & Neurological <span class="tag tag-gold">Selected Sites</span></div>
+      <p>Vestibular rehabilitation and neurological physiotherapy. Complex patient populations — always maintain heightened fall-risk awareness.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👩 Women's Health <span class="tag tag-gold">Selected Sites</span></div>
+      <p>Pelvic floor and women's health physiotherapy. Strict privacy and dignity standards apply. Students will not be involved in internal assessments.</p>
+    </div>
+
+    <h3>Funding Streams You May Encounter</h3>
+    <p>Patients may be funded through various schemes. You are not responsible for funding-related decisions, but it is useful to be aware:</p>
+    <ul>
+      <li><strong>Medicare (CDM/EPC plans)</strong> — GP-referred allied health</li>
+      <li><strong>NDIS</strong> — National Disability Insurance Scheme</li>
+      <li><strong>DVA</strong> — Department of Veterans' Affairs</li>
+      <li><strong>WorkCover / TAC</strong> — Work or transport injury schemes</li>
+      <li><strong>Private health insurance</strong></li>
+      <li><strong>Private (self-pay)</strong></li>
+    </ul>
+    <p>Never discuss a patient's funding type with other patients. Do not answer any questions about billing or claiming — redirect to reception.</p>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('supervision')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('clinical', 'health')">Next: Health Disclosure →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: HEALTH DISCLOSURE ══════════ -->
+  <section class="section" id="sec-health">
+    <div class="section-header">
+      <div class="section-icon">🏥</div>
+      <div>
+        <div class="section-title">Health Disclosure</div>
+        <div class="section-desc">Your safety — and your patients' safety — depends on honest disclosure</div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>Why this matters:</strong> A non-disclosed pre-existing condition during patient handling can result in injury to you, risk to patient safety, and removal from placement. We have experienced this situation firsthand. Non-disclosure also creates complex liability and insurance consequences that can affect your career.</p>
+      <p style="margin-top:10px;"><strong>Enhance Physio is not your treating provider.</strong> If you sustain an injury during placement, you must report it immediately and seek care through your own healthcare provider. Students are not eligible for complimentary treatment from Enhance Physio staff.</p>
+    </div>
+
+    <h3>Physical Health Disclosure Checklist</h3>
+    <p>Please review the following. If any apply to you, you must notify your Supervisor before your placement commences. You do not need to share a diagnosis — simply indicate that you have a relevant condition that may affect the listed activities.</p>
+
+    <div class="disclosure-grid" id="healthDisclosure">
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd1">
+        <label class="disclosure-label" for="hd1">Back or spinal condition that may be affected by manual handling, patient transfer, or prolonged standing</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd2">
+        <label class="disclosure-label" for="hd2">Shoulder, elbow, or wrist condition that may be affected by patient assistance or equipment use</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd3">
+        <label class="disclosure-label" for="hd3">Lower limb condition (knee, ankle, hip) that may affect mobility or safe participation in clinical tasks</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd4">
+        <label class="disclosure-label" for="hd4">Cardiovascular condition that may be affected by physical exertion during placement activities</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd5">
+        <label class="disclosure-label" for="hd5">Skin condition, wound, or infection relevant to hydrotherapy participation (if applicable to your site)</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd6">
+        <label class="disclosure-label" for="hd6">Pregnancy — current or recently post-partum</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd7">
+        <label class="disclosure-label" for="hd7">Any other physical condition not listed above that may affect your capacity to safely participate</label>
+      </div>
+      <div class="disclosure-item">
+        <input type="checkbox" id="hd8">
+        <label class="disclosure-label" for="hd8"><strong>None of the above apply to me</strong></label>
+      </div>
+    </div>
+
+    <h3>Mental Health & Wellbeing</h3>
+    <p>Clinical placement can be emotionally demanding. Exposure to complex patient presentations, fatigue, and performance pressure are common stressors. We take student mental health seriously.</p>
+    <ul>
+      <li>If you are experiencing a mental health condition that may affect your ability to safely and professionally participate in placement, you must notify your Supervisor or university coordinator before commencing.</li>
+      <li>You do not need to disclose a specific diagnosis — simply that you may need additional support or adjustments.</li>
+      <li>If your mental health status changes during placement, notify your Supervisor promptly.</li>
+      <li>Enhance Physio is not a mental health treatment provider. Students are encouraged to access their university's wellbeing services.</li>
+    </ul>
+
+    <h3>During-Placement Health Changes</h3>
+    <p>If your physical or mental health status changes at any point during placement, you must:</p>
+    <ol>
+      <li>Notify your Supervisor on the same day</li>
+      <li>Notify your university placement coordinator</li>
+      <li>Not continue with tasks that present a risk to yourself or patients until cleared to do so</li>
+    </ol>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('clinical')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('health', 'safety')">Next: WHS & Safety →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: SAFETY ══════════ -->
+  <section class="section" id="sec-safety">
+    <div class="section-header">
+      <div class="section-icon">⛑️</div>
+      <div>
+        <div class="section-title">Work Health & Safety</div>
+        <div class="section-desc">Your obligations and rights in a safe clinical workplace</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p>Work health and safety (WHS) legislation applies to you as a student on placement. You have both rights and responsibilities under this framework, regardless of your employment status.</p>
+    </div>
+
+    <h3>Your WHS Rights</h3>
+    <ul>
+      <li>The right to a safe workplace free from hazards</li>
+      <li>The right to refuse unsafe work — you must inform your Supervisor and document the refusal</li>
+      <li>The right to be informed about risks relevant to your placement activities</li>
+      <li>The right to be trained before performing tasks with a safety component</li>
+    </ul>
+
+    <h3>Your WHS Responsibilities</h3>
+    <ul>
+      <li>Follow all safe work procedures and your Supervisor's reasonable safety instructions</li>
+      <li>Report all hazards, near-misses, and incidents — even if no injury occurred</li>
+      <li>Do not undertake tasks you have not been trained or authorised to perform</li>
+      <li>Use personal protective equipment (PPE) when required</li>
+      <li>Maintain appropriate manual handling techniques at all times</li>
+    </ul>
+
+    <h3>Manual Handling</h3>
+    <p>Physiotherapy placements involve patient-handling activities including transfers, mobility assistance, and exercise support. You must:</p>
+    <ul>
+      <li>Only assist with manual handling tasks under direct supervision</li>
+      <li>Never attempt to transfer or mobilise a patient alone unless explicitly authorised and trained to do so</li>
+      <li>Use equipment (hoists, gait belts, transfer boards) as directed — never improvise</li>
+      <li>Stop and seek assistance if you feel a task is beyond your physical capacity</li>
+    </ul>
+
+    <h3>Infection Control</h3>
+    <ul>
+      <li>Perform hand hygiene before and after every patient contact</li>
+      <li>Use standard precautions for all patients, regardless of known infection status</li>
+      <li>Do not attend placement if you are unwell with a communicable illness (flu, gastro, COVID-19, etc.)</li>
+      <li>Report any needlestick or sharps injuries immediately to your Supervisor</li>
+    </ul>
+
+    <h3>Emergency Procedures</h3>
+    <p>On your first day, your Supervisor must show you:</p>
+    <ul>
+      <li>The location of the nearest first aid kit and AED (defibrillator)</li>
+      <li>The emergency evacuation route and assembly point for your site</li>
+      <li>How to call for help in a clinical emergency (code procedure if applicable)</li>
+      <li>The location of the nearest emergency call button or staff alarm (if present)</li>
+    </ul>
+
+    <div class="warn-box">
+      <p><strong>In any emergency — call 000 first.</strong> Notify your Supervisor immediately after. Do not delay emergency services while attempting to contact clinic management.</p>
+    </div>
+
+    <h3>Incident Reporting</h3>
+    <p>All incidents — including near-misses — must be reported on the same shift. This includes:</p>
+    <ul>
+      <li>Any injury sustained by you or a patient</li>
+      <li>Equipment failures</li>
+      <li>Falls or near-falls</li>
+      <li>Adverse patient reactions to treatment</li>
+      <li>Any event that could have caused harm but did not</li>
+    </ul>
+    <p>Report to your Supervisor first, then follow the process outlined in the Reporting section of this handbook.</p>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('health')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('safety', 'professional')">Next: Professional Conduct →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: PROFESSIONAL CONDUCT ══════════ -->
+  <section class="section" id="sec-professional">
+    <div class="section-header">
+      <div class="section-icon">🎓</div>
+      <div>
+        <div class="section-title">Professional Conduct</div>
+        <div class="section-desc">Boundaries, communication, and what professionalism looks like in practice</div>
+      </div>
+    </div>
+
+    <h3>Professional Boundaries with Patients</h3>
+    <p>Maintaining clear professional boundaries is one of the most important skills you will develop as a clinician. Boundaries protect patients, protect you, and protect the clinic.</p>
+
+    <div class="card">
+      <div class="card-title">✅ Appropriate behaviours include:</div>
+      <ul>
+        <li>Addressing patients by their preferred name after asking</li>
+        <li>Using clear, professional language appropriate to the patient's level of understanding</li>
+        <li>Maintaining appropriate physical contact — always within your delegated scope and with consent</li>
+        <li>Being warm and empathetic while remaining professional</li>
+        <li>Discussing clinical matters only in appropriate clinical settings</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-title">❌ Boundary violations include:</div>
+      <ul>
+        <li>Sharing personal details about yourself beyond what is necessary for rapport</li>
+        <li>Accepting gifts from patients (beyond minor, token items — discuss with Supervisor)</li>
+        <li>Continuing a therapeutic relationship outside the clinic setting</li>
+        <li>Engaging with patients on social media or via personal communication channels</li>
+        <li>Discussing other patients or staff with a patient</li>
+        <li>Making physical contact beyond what is clinically authorised</li>
+      </ul>
+    </div>
+
+    <h3>Professional Boundaries with Staff</h3>
+    <p>You are a guest in our workplace. The relationships you build with staff are professional relationships. This includes:</p>
+
+    <div class="warn-box">
+      <p><strong>Social Media & Personal Communication:</strong> You must not initiate or accept personal social media connections (Instagram, Snapchat, TikTok, Facebook, etc.) with Enhance Physio staff members during your placement. Professional connections on LinkedIn are acceptable only after your placement has concluded.</p>
+      <p style="margin-top:10px;">Do not share personal contact details (personal phone number, personal email) with staff unless required by your university for placement administration. All placement-related communication should be through official channels.</p>
+      <p style="margin-top:10px;">Any inappropriate communication — whether initiated by you or a staff member — must be reported to the Clinical Director immediately.</p>
+    </div>
+
+    <h3>Communication Standards</h3>
+    <ul>
+      <li>Be clear, respectful, and professional in all verbal and written communication</li>
+      <li>Do not use clinical jargon with patients without explanation</li>
+      <li>Never make clinical promises to patients (e.g. "you'll be better in two weeks")</li>
+      <li>Escalate any patient communication you are unsure how to handle to your Supervisor</li>
+      <li>Written communication (emails, documentation) must be reviewed by your Supervisor before sending or filing</li>
+    </ul>
+
+    <h3>Feedback & Performance</h3>
+    <p>You will receive regular feedback during your placement. This is a professional process, not a personal one. You are expected to:</p>
+    <ul>
+      <li>Receive feedback openly and non-defensively</li>
+      <li>Act on feedback promptly</li>
+      <li>Seek feedback proactively — do not wait to be told</li>
+      <li>Raise any concerns about your placement experience with your Supervisor or university coordinator</li>
+    </ul>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('safety')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('professional', 'confidentiality')">Next: Privacy & Confidentiality →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: CONFIDENTIALITY ══════════ -->
+  <section class="section" id="sec-confidentiality">
+    <div class="section-header">
+      <div class="section-icon">🔒</div>
+      <div>
+        <div class="section-title">Privacy & Confidentiality</div>
+        <div class="section-desc">Patient information is never yours to share</div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>Your confidentiality obligations do not end when your placement ends.</strong> Patient information you encounter during placement remains strictly confidential — indefinitely. This is a legal and ethical obligation.</p>
+    </div>
+
+    <h3>What is Confidential Information?</h3>
+    <p>Everything. This includes:</p>
+    <ul>
+      <li>Patient names, dates of birth, contact details</li>
+      <li>Diagnoses, medical history, treatment plans</li>
+      <li>Funding schemes and financial information</li>
+      <li>Conversations between patients and clinicians</li>
+      <li>Patient outcomes and progress notes</li>
+      <li>Any information you observe, overhear, or access during placement</li>
+    </ul>
+
+    <h3>The Australian Privacy Act & Your Obligations</h3>
+    <p>Enhance Physio operates in compliance with the <strong>Privacy Act 1988 (Cth)</strong> and the <strong>Australian Privacy Principles (APPs)</strong>. As a student on placement, you are bound by the same obligations as our employees. Breach of patient privacy may result in:</p>
+    <ul>
+      <li>Immediate removal from placement</li>
+      <li>Notification to your university</li>
+      <li>Referral to the Australian Health Practitioner Regulation Agency (AHPRA)</li>
+      <li>Legal consequences under privacy legislation</li>
+    </ul>
+
+    <h3>Practical Rules</h3>
+    <ul>
+      <li>Never discuss patient details in public areas of the clinic (waiting room, corridors)</li>
+      <li>Never discuss patients outside the clinic — not with family, friends, or on social media</li>
+      <li>Do not access patient records beyond what is required for your directly supervised clinical tasks</li>
+      <li>If you use de-identified case studies for academic work, obtain explicit approval from your Supervisor first</li>
+      <li>Never take photos of patient records, treatment notes, or any patient-identifiable material</li>
+      <li>If you believe a privacy breach has occurred, report it immediately to your Supervisor</li>
+    </ul>
+
+    <h3>Electronic Systems & Records</h3>
+    <p>Access to clinical software (e.g. Cliniko) is provided for supervised purposes only. You must:</p>
+    <ul>
+      <li>Never share login credentials</li>
+      <li>Log out of clinical systems when not in use</li>
+      <li>Only access records of patients you are directly involved in caring for</li>
+      <li>Report any accidental access to records you should not have seen</li>
+    </ul>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('professional')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('confidentiality', 'social')">Next: Social Media & Comms →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: SOCIAL MEDIA ══════════ -->
+  <section class="section" id="sec-social">
+    <div class="section-header">
+      <div class="section-icon">📱</div>
+      <div>
+        <div class="section-title">Social Media & Communications</div>
+        <div class="section-desc">What you post, share, or send reflects on your profession</div>
+      </div>
+    </div>
+
+    <div class="warn-box">
+      <p><strong>"Private" does not mean confidential.</strong> Anything posted online — regardless of your privacy settings — can be shared, screenshotted, and distributed. AHPRA has published explicit guidance on social media use for health practitioners, and the same standards apply to students.</p>
+    </div>
+
+    <h3>Absolute Prohibitions</h3>
+    <ul>
+      <li>Never post photos, videos, or audio recordings taken at an Enhance Physio clinic without written authorisation</li>
+      <li>Never post information — even de-identified — that could allow a patient to be identified</li>
+      <li>Never post negative comments about Enhance Physio, its staff, or patients on any platform</li>
+      <li>Never tag Enhance Physio locations in personal posts without approval</li>
+      <li>Never connect with or follow patients on any personal social media platform</li>
+    </ul>
+
+    <h3>Staff Social Media Connections</h3>
+    <p>As covered in the Professional Conduct section: do not initiate or accept personal social media connections with Enhance Physio staff during your placement. LinkedIn connections after placement has concluded are acceptable.</p>
+
+    <h3>What You May Do</h3>
+    <ul>
+      <li>Follow Enhance Physio's official social media accounts</li>
+      <li>Share Enhance Physio's published content (e.g. clinic posts, articles) from official accounts</li>
+      <li>Mention your placement in general terms (e.g. "Completing my clinical placement at Enhance Physio") without any clinical details</li>
+    </ul>
+
+    <h3>Messaging & Personal Communication</h3>
+    <ul>
+      <li>Do not add patients or staff to personal messaging groups (WhatsApp, iMessage, etc.)</li>
+      <li>All placement-related communication must use your university or professional email</li>
+      <li>If a patient attempts to contact you through personal channels, inform your Supervisor immediately</li>
+    </ul>
+
+    <div class="gold-box">
+      <p><strong>AHPRA Reference:</strong> The Australian Health Practitioner Regulation Agency (AHPRA) has published social media guidance for health practitioners. As a student entering the health professions, you are encouraged to read this guidance and understand how it will apply to your career. Your conduct as a student sets the standard for your professional life.</p>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('confidentiality')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('social', 'reporting')">Next: Reporting & Flowchart →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: REPORTING ══════════ -->
+  <section class="section" id="sec-reporting">
+    <div class="section-header">
+      <div class="section-icon">📢</div>
+      <div>
+        <div class="section-title">Reporting & Incident Flowchart</div>
+        <div class="section-desc">Who to tell, when, and how</div>
+      </div>
+    </div>
+
+    <p>When something goes wrong — or even when it nearly goes wrong — the right response is always to report it. Prompt, honest reporting protects patients, protects you, and protects the clinic.</p>
+
+    <div class="highlight-box">
+      <p><strong>Key principle:</strong> All significant reporting — including incidents, complaints, and concerns — must include your Clinical Lead or Clinical Director. Do not attempt to resolve significant matters between yourself and one staff member in isolation.</p>
+    </div>
+
+    <h3>General Reporting Flowchart</h3>
+    <div class="flowchart">
+
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <div class="flow-content">
+          <div class="flow-title">Ensure immediate safety</div>
+          <div class="flow-desc">If anyone is in immediate danger — patient, student, or staff — ensure safety first. Call 000 if required. Do not delay emergency services to report to management.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <div class="flow-content">
+          <div class="flow-title">Notify your Supervisor</div>
+          <div class="flow-desc">Tell your on-site Supervisor as soon as the immediate situation is safe. Do this verbally first, then in writing. If your Supervisor is unavailable, go directly to the Clinical Lead.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <div class="flow-content">
+          <div class="flow-title">Notify the Clinical Lead or Clinical Director</div>
+          <div class="flow-desc">For any significant incident — injury, complaint, boundary concern, or policy breach — the Clinical Lead or Clinical Director must be informed on the same day. This is not optional.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <div class="flow-content">
+          <div class="flow-title">Notify your University Placement Coordinator</div>
+          <div class="flow-desc">For incidents that affect your placement, wellbeing, or academic standing, notify your university coordinator. Enhance Physio may also contact them directly for serious matters.</div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-num">5</div>
+        <div class="flow-content">
+          <div class="flow-title">Complete written documentation</div>
+          <div class="flow-desc">An incident report must be completed the same day. Your Supervisor will guide you through this process. Write factually and objectively — what happened, when, who was involved, what action was taken.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3>Specific Reporting Situations</h3>
+    <table>
+      <tr><th>Situation</th><th>Report To</th><th>Timeframe</th></tr>
+      <tr><td>Patient injury or adverse event</td><td>Supervisor → Clinical Lead/Director</td><td>Immediately</td></tr>
+      <tr><td>Student injury during placement</td><td>Supervisor → Clinical Director → University</td><td>Same shift</td></tr>
+      <tr><td>Undisclosed health condition affecting safety</td><td>Supervisor → Clinical Director</td><td>Immediately upon realisation</td></tr>
+      <tr><td>Professional boundary concern (any party)</td><td>Clinical Director directly</td><td>Same day</td></tr>
+      <tr><td>Patient complaint about student</td><td>Supervisor → Clinical Director → University</td><td>Same day</td></tr>
+      <tr><td>Privacy or confidentiality breach</td><td>Supervisor → Clinical Director</td><td>Same day</td></tr>
+      <tr><td>Near-miss (no injury but potential existed)</td><td>Supervisor</td><td>Same shift</td></tr>
+      <tr><td>Concern about Supervisor conduct</td><td>Clinical Director directly</td><td>Same day</td></tr>
+    </table>
+
+    <div class="warn-box">
+      <p><strong>If you have a concern about your Supervisor's conduct,</strong> contact the Clinical Director directly. You will not be penalised for raising a legitimate concern through the correct channel. Your safety and the integrity of the placement environment are paramount.</p>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('social')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('reporting', 'scenarios')">Next: Scenarios →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: SCENARIOS ══════════ -->
+  <section class="section" id="sec-scenarios">
+    <div class="section-header">
+      <div class="section-icon">💡</div>
+      <div>
+        <div class="section-title">Real-World Scenarios</div>
+        <div class="section-desc">Practice thinking through situations before they happen</div>
+      </div>
+    </div>
+
+    <p>The following scenarios are based on real situations encountered during student placements. Read each one and consider what the correct course of action would be before expanding the answer.</p>
+
+    <!-- Scenario 1 -->
+    <div class="scenario" id="sc1">
+      <div class="scenario-header" onclick="toggleScenario('sc1')">
+        <div class="scenario-icon" style="background:var(--warn-light);">🤕</div>
+        <div class="scenario-title">Scenario 1: Pre-existing Injury & Patient Safety</div>
+        <span class="tag tag-warn">Health Disclosure</span>
+        <div class="scenario-chevron">▼</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-situation">During a patient transfer, you feel a sharp pain in your lower back — an area you injured six months ago playing sport, which you did not disclose before placement. You complete the transfer, the patient is safe, but you are now in significant pain. You say nothing and continue the shift.</div>
+        <div class="scenario-action"><strong>What went wrong:</strong> You had a pre-existing condition that should have been disclosed. By not disclosing it, you placed both yourself and the patient at risk during the transfer. Continuing to work while in pain compounds the risk.</div>
+        <div class="scenario-action"><strong>What you should have done (before placement):</strong> Disclosed the condition to your Supervisor so modifications to your tasks could be arranged — without necessarily disclosing your specific diagnosis.</div>
+        <div class="scenario-action"><strong>What you must do now:</strong> Stop the task. Inform your Supervisor immediately. Complete an incident report. Seek your own medical care. Do not return to manual handling until cleared. Your university coordinator must also be notified.</div>
+        <div class="scenario-action"><strong>Important:</strong> Enhance Physio will not provide complimentary treatment. This is a matter of liability, patient safety, and non-disclosure — not a reflection of our care for you as a person.</div>
+      </div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario" id="sc2">
+      <div class="scenario-header" onclick="toggleScenario('sc2')">
+        <div class="scenario-icon" style="background:#fff3cd;">📱</div>
+        <div class="scenario-title">Scenario 2: Social Media & Professional Boundaries</div>
+        <span class="tag tag-warn">Boundaries</span>
+        <div class="scenario-chevron">▼</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-situation">A staff member adds you on Instagram during your second week of placement. They follow you, and you follow back. Over the next few days they send you DMs commenting on your personal posts. You feel uncomfortable but don't want to cause issues at work.</div>
+        <div class="scenario-action"><strong>What went wrong:</strong> A professional boundary has been crossed by the staff member. Accepting the follow created an ambiguous personal-professional dynamic that can escalate.</div>
+        <div class="scenario-action"><strong>What you should do:</strong> You are not obligated to maintain personal social media connections with staff. Remove or restrict the connection. Then — importantly — report the situation to the Clinical Director directly and the same day. You will not be penalised for doing so.</div>
+        <div class="scenario-action"><strong>What you should not do:</strong> Continue the interaction. Attempt to resolve it yourself without notifying the Clinical Director. Say nothing and hope it stops.</div>
+        <div class="scenario-action"><strong>Remember:</strong> Feeling uncomfortable is a signal, not a problem. Reporting protects you, the staff member, and future students.</div>
+      </div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario" id="sc3">
+      <div class="scenario-header" onclick="toggleScenario('sc3')">
+        <div class="scenario-icon" style="background:var(--teal-pale);">🗣️</div>
+        <div class="scenario-title">Scenario 3: Patient Asks for Your Clinical Opinion</div>
+        <span class="tag tag-teal">Scope of Practice</span>
+        <div class="scenario-chevron">▼</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-situation">While assisting in a group class, a patient asks you privately: "Do you think I need surgery? My physio hasn't mentioned it but I'm worried." You have some knowledge of this patient's condition and have an opinion. Your Supervisor is across the room.</div>
+        <div class="scenario-action"><strong>What you must do:</strong> Do not share your opinion. Acknowledge their concern warmly, and let them know you are not in a position to give clinical advice — but that it is a great question for their physio. Tell them you will let the treating physiotherapist know they have this question.</div>
+        <div class="scenario-action"><strong>Why:</strong> Providing clinical opinions is outside your scope as a student. Even if you are right, you may be wrong — and acting on incorrect student advice about surgery could cause serious harm. Your role is to support, not to diagnose or recommend.</div>
+        <div class="scenario-action"><strong>After the session:</strong> Let your Supervisor know the patient had this question, so the treating clinician can follow it up appropriately.</div>
+      </div>
+    </div>
+
+    <!-- Scenario 4 -->
+    <div class="scenario" id="sc4">
+      <div class="scenario-header" onclick="toggleScenario('sc4')">
+        <div class="scenario-icon" style="background:var(--gold-light);">🏊</div>
+        <div class="scenario-title">Scenario 4: Hydrotherapy & Undisclosed Condition</div>
+        <span class="tag tag-gold">Hydrotherapy</span>
+        <div class="scenario-chevron">▼</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-situation">You are placed at a site with a hydrotherapy pool. You have a skin condition (eczema) that is currently flaring. You feel awkward mentioning it and decide not to say anything, entering the pool during a group session.</div>
+        <div class="scenario-action"><strong>What went wrong:</strong> Skin conditions relevant to pool participation must be disclosed prior to entry. An active flare may increase risk of infection for you and other pool users. Non-disclosure is a breach of your health declaration obligations.</div>
+        <div class="scenario-action"><strong>What you should have done:</strong> Informed your Supervisor before the session that you have a skin condition and asked whether it was appropriate for you to enter the pool. This is a brief, clinical conversation — not an overshare.</div>
+        <div class="scenario-action"><strong>The outcome of disclosure:</strong> Your Supervisor might advise you not to enter the pool for this session, or may confirm it is fine with appropriate management. Either way, you are protected and the patient population is protected.</div>
+      </div>
+    </div>
+
+    <!-- Scenario 5 -->
+    <div class="scenario" id="sc5">
+      <div class="scenario-header" onclick="toggleScenario('sc5')">
+        <div class="scenario-icon" style="background:#f0f0f0;">😰</div>
+        <div class="scenario-title">Scenario 5: Student Mental Health During Placement</div>
+        <span class="tag tag-teal">Wellbeing</span>
+        <div class="scenario-chevron">▼</div>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-situation">You are three weeks into placement. You find yourself crying in the bathroom between patients. You are not sleeping. You feel overwhelmed and are struggling to concentrate. You don't want to seem weak or have your placement terminated, so you say nothing.</div>
+        <div class="scenario-action"><strong>What you should do:</strong> Speak to someone — your Supervisor, your university placement coordinator, or your university's student wellbeing service. You do not need to have a diagnosis to ask for support.</div>
+        <div class="scenario-action"><strong>Why speaking up matters:</strong> A student who is significantly distressed cannot safely provide patient care. Saying nothing is a risk to you and to patients. Seeking help early protects both.</div>
+        <div class="scenario-action"><strong>What Enhance Physio will do:</strong> We will work with you and your university to find a solution — whether that is a temporary adjustment, a pause, or additional support. Our goal is not to penalise you for struggling. It is to keep everyone safe.</div>
+        <div class="scenario-action"><strong>Resources:</strong> Contact your university's student support services. If you are in crisis, contact Lifeline on 13 11 14 or Beyond Blue on 1300 22 4636.</div>
+      </div>
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('reporting')">← Back</button>
+      <button class="btn btn-primary" onclick="completeAndNext('scenarios', 'acknowledgement')">Next: Acknowledgement →</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: ACKNOWLEDGEMENT ══════════ -->
+  <section class="section" id="sec-acknowledgement">
+    <div class="section-header">
+      <div class="section-icon">✍️</div>
+      <div>
+        <div class="section-title">Acknowledgement</div>
+        <div class="section-desc">Confirm you have read and understood this handbook</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p>Enter your details and tick each statement below. All fields and boxes must be completed. A notification will be sent automatically to the Clinical Director, and a printable summary will be generated for your records. This does not replace your signed Student Declaration Form.</p>
+    </div>
+
+    <!-- Student details -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:24px;">
+      <h3 style="margin-bottom:20px;margin-top:0;font-family:Cabin,sans-serif;color:var(--teal-dark);">Your Details</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Full Name *</label>
+          <input type="text" id="studentName" placeholder="Your full name" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Educational Institution *</label>
+          <input type="text" id="studentUni" placeholder="e.g. Charles Sturt University" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Student Email *</label>
+          <input type="email" id="studentEmail" placeholder="Your university or personal email" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Placement Site *</label>
+          <select id="studentSite" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;background:var(--white);transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+            <option value="">Select your site</option>
+            <option>Albury</option>
+            <option>Lavington</option>
+            <option>Wodonga</option>
+            <option>Mulgrave</option>
+            <option>Hope Island</option>
+            <option>Mudgeeraba</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Placement Start Date *</label>
+          <input type="date" id="studentStart" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:6px;">Placement End Date *</label>
+          <input type="date" id="studentEnd" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--charcoal);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+      </div>
+    </div>
+
+    <div id="ackList">
+
+      <div class="ack-item" id="ack-a">
+        <input type="checkbox" id="a1" onchange="ackChange()">
+        <label class="ack-text" for="a1">I have read the Enhance Physio mission, vision, and values and understand I am expected to uphold them during my placement.</label>
+      </div>
+
+      <div class="ack-item" id="ack-b">
+        <input type="checkbox" id="a2" onchange="ackChange()">
+        <label class="ack-text" for="a2">I understand that I must not provide any patient care, treatment, or clinical advice without direct supervision or explicit delegation from my qualified Supervisor.</label>
+      </div>
+
+      <div class="ack-item" id="ack-c">
+        <input type="checkbox" id="a3" onchange="ackChange()">
+        <label class="ack-text" for="a3">I have reviewed the health disclosure checklist and understand I must notify my Supervisor of any physical or mental health condition that may affect my ability to safely participate in placement activities — before placement commences or as soon as a condition arises or changes.</label>
+      </div>
+
+      <div class="ack-item" id="ack-d">
+        <input type="checkbox" id="a4" onchange="ackChange()">
+        <label class="ack-text" for="a4">I understand that Enhance Physio is not my treating healthcare provider and I am not entitled to complimentary or discounted clinical treatment from Enhance Physio staff. If I sustain an injury, I must seek care through my own provider.</label>
+      </div>
+
+      <div class="ack-item" id="ack-e">
+        <input type="checkbox" id="a5" onchange="ackChange()">
+        <label class="ack-text" for="a5">I understand my strict obligations regarding patient privacy and confidentiality under the Privacy Act 1988 (Cth) and the Australian Privacy Principles, and that these obligations continue after my placement has ended.</label>
+      </div>
+
+      <div class="ack-item" id="ack-f">
+        <input type="checkbox" id="a6" onchange="ackChange()">
+        <label class="ack-text" for="a6">I understand the social media and professional communication standards and will not initiate personal social media connections with staff or patients during my placement.</label>
+      </div>
+
+      <div class="ack-item" id="ack-g">
+        <input type="checkbox" id="a7" onchange="ackChange()">
+        <label class="ack-text" for="a7">I understand the professional boundary expectations outlined in this handbook and will report any boundary concerns — involving myself, staff, or patients — to the Clinical Director on the same day.</label>
+      </div>
+
+      <div class="ack-item" id="ack-h">
+        <input type="checkbox" id="a8" onchange="ackChange()">
+        <label class="ack-text" for="a8">I understand the incident reporting structure and know that all significant incidents must include notification to the Clinical Lead or Clinical Director, regardless of which staff member I am working with.</label>
+      </div>
+
+      <div class="ack-item" id="ack-i">
+        <input type="checkbox" id="a9" onchange="ackChange()">
+        <label class="ack-text" for="a9">I understand that I am bound by both Enhance Physiotherapy's requirements and my educational institution's requirements simultaneously, and that where a conflict arises, I must notify both parties immediately.</label>
+      </div>
+
+      <div class="ack-item" id="ack-j">
+        <input type="checkbox" id="a10" onchange="ackChange()">
+        <label class="ack-text" for="a10">I understand that breaches of the policies and expectations outlined in this handbook may result in the termination of my placement and notification to my educational institution.</label>
+      </div>
+
+      <div class="ack-item" id="ack-k">
+        <input type="checkbox" id="a11" onchange="ackChange()">
+        <label class="ack-text" for="a11">I confirm I have read this handbook in full and have had the opportunity to ask questions. I accept the responsibilities and obligations outlined herein.</label>
+      </div>
+
+    </div>
+
+    <div style="margin-top:24px; padding:20px; background:var(--white); border:1px solid var(--border); border-radius:var(--radius);">
+      <p style="font-size:13px; color:var(--mid); margin-bottom:12px;">Acknowledgement date:</p>
+      <p style="font-weight:600; font-size:15px; color:var(--charcoal);" id="ackDate"></p>
+    </div>
+
+    <div id="ackStatus" style="margin-top:16px; padding:16px 20px; border-radius:8px; background:var(--warn-light); color:var(--warn); font-size:14px; font-weight:500; display:none;">
+      ⚠️ Please tick all boxes above to complete your acknowledgement.
+    </div>
+
+    <div class="section-nav">
+      <button class="btn btn-secondary" onclick="showSection('scenarios')">← Back</button>
+      <button class="btn btn-success" id="completeBtn" onclick="completHandbook()">Complete Handbook ✓</button>
+    </div>
+  </section>
+
+  <!-- ══════════ SECTION: COMPLETE ══════════ -->
+  <section class="section" id="sec-complete">
+
+    <!-- Submission status banner -->
+    <div id="submitBanner" style="display:none;padding:16px 20px;border-radius:var(--radius);margin-bottom:28px;font-size:14px;font-weight:600;"></div>
+
+    <div class="completion-screen">
+      <span class="completion-icon">🎉</span>
+      <div class="completion-title">Handbook Complete</div>
+      <p class="completion-sub">You have successfully completed the Enhance Physio Essential Program Student Handbook. A notification has been sent to the Clinical Director.</p>
+
+      <!-- Printable summary card -->
+      <div id="summaryCard" class="card" style="text-align:left;max-width:600px;margin:0 auto 32px;border:2px solid var(--teal);">
+        <div class="card-title" style="font-size:17px;margin-bottom:20px;">📋 Completion Summary</div>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);width:40%;">Student</td>
+            <td style="padding:10px 0;color:var(--mid);" id="sum-name">—</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Institution</td>
+            <td style="padding:10px 0;color:var(--mid);" id="sum-uni">—</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Placement Site</td>
+            <td style="padding:10px 0;color:var(--mid);" id="sum-site">—</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Placement Dates</td>
+            <td style="padding:10px 0;color:var(--mid);" id="sum-dates">—</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Handbook</td>
+            <td style="padding:10px 0;color:var(--mid);">Essential Program — Version 2025–26</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Completed</td>
+            <td style="padding:10px 0;color:var(--mid);" id="sum-date">—</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 0;font-weight:600;color:var(--charcoal);">Acknowledgements</td>
+            <td style="padding:10px 0;color:#27ae60;font-weight:600;">✓ All 11 statements confirmed</td>
+          </tr>
+        </table>
+        <div style="margin-top:20px;padding:14px 16px;background:var(--teal-pale);border-radius:8px;font-size:13px;color:var(--mid);">
+          This summary confirms that the student above has read and acknowledged the Enhance Physio Essential Program Student Handbook in full. This does not replace the signed Student Declaration Form.
+        </div>
+      </div>
+
+      <div class="card" style="text-align:left;max-width:600px;margin:0 auto 32px;">
+        <div class="card-title">✅ What happens next</div>
+        <ol style="margin:0;padding-left:20px;">
+          <li style="margin-bottom:10px;">Print or save this page as a PDF — use the button below. Keep a copy for your records.</li>
+          <li style="margin-bottom:10px;">Ensure your signed <strong>Student Declaration Form</strong> (PDF) has been returned to your Supervisor.</li>
+          <li style="margin-bottom:10px;">Contact your Supervisor to confirm your first day, time, location, and what to bring.</li>
+          <li style="margin-bottom:10px;">Complete any remaining pre-placement requirements from your university.</li>
+          <li>We look forward to welcoming you to Enhance Physio.</li>
+        </ol>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      </div>
+      <p style="font-size:13px;color:var(--mid);margin-top:20px;">Questions? Contact the Clinical Director at chris@enhance.physio before your placement commences.</p>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // Track completed sections
+  const completed = new Set();
+  const sections = ['welcome','about','locations','expectations','supervision','clinical','health','safety','professional','confidentiality','social','reporting','scenarios','acknowledgement'];
+
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('nav-' + id)?.classList.add('active');
+    document.getElementById('main').scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    // Set ack date
+    if (id === 'acknowledgement') {
+      document.getElementById('ackDate').textContent = new Date().toLocaleDateString('en-AU', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    }
+  }
+
+  function completeAndNext(current, next) {
+    completed.add(current);
+    const chk = document.getElementById('chk-' + current);
+    if (chk) {
+      chk.textContent = '✓';
+    }
+    const navItem = document.getElementById('nav-' + current);
+    if (navItem) navItem.classList.add('completed');
+    updateProgress();
+    showSection(next);
+  }
+
+  function updateProgress() {
+    const total = sections.length;
+    const done = completed.size;
+    const pct = Math.round((done / total) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '% complete';
+  }
+
+  function toggleScenario(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+  }
+
+  function ackChange() {
+    const boxes = document.querySelectorAll('#ackList input[type="checkbox"]');
+    const all = Array.from(boxes);
+    all.forEach((cb, i) => {
+      const item = cb.closest('.ack-item');
+      if (cb.checked) item.classList.add('checked');
+      else item.classList.remove('checked');
+    });
+  }
+
+  async function completHandbook() {
+    // Validate all checkboxes
+    const boxes = document.querySelectorAll('#ackList input[type="checkbox"]');
+    const allChecked = Array.from(boxes).every(cb => cb.checked);
+    if (!allChecked) {
+      document.getElementById('ackStatus').style.display = 'block';
+      return;
+    }
+
+    // Validate student fields
+    const name    = document.getElementById('studentName').value.trim();
+    const uni     = document.getElementById('studentUni').value.trim();
+    const email   = document.getElementById('studentEmail').value.trim();
+    const site    = document.getElementById('studentSite').value;
+    const start   = document.getElementById('studentStart').value;
+    const end     = document.getElementById('studentEnd').value;
+
+    if (!name || !uni || !email || !site || !start || !end) {
+      document.getElementById('ackStatus').textContent = '⚠️ Please complete all fields in the Your Details section before submitting.';
+      document.getElementById('ackStatus').style.display = 'block';
+      return;
+    }
+
+    // Hide error, disable button
+    document.getElementById('ackStatus').style.display = 'none';
+    const btn = document.getElementById('completeBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const completedDate = new Date().toLocaleDateString('en-AU', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    const startFmt = new Date(start).toLocaleDateString('en-AU', {day:'numeric', month:'long', year:'numeric'});
+    const endFmt   = new Date(end).toLocaleDateString('en-AU',   {day:'numeric', month:'long', year:'numeric'});
+
+    // Submit to Formspree
+    try {
+      const res = await fetch('https://formspree.io/f/mykookol', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `Handbook Completed — ${name} — ${site}`,
+          student_name:    name,
+          institution:     uni,
+          student_email:   email,
+          placement_site:  site,
+          placement_start: startFmt,
+          placement_end:   endFmt,
+          completed_on:    completedDate,
+          handbook:        'Essential Program — Version 2025–26',
+          acknowledgements:'All 11 statements confirmed',
+          _replyto:        email,
+        })
+      });
+
+      const banner = document.getElementById('submitBanner');
+      if (res.ok) {
+        banner.style.background = '#eafaf1';
+        banner.style.color = '#1e8449';
+        banner.style.border = '1px solid #a9dfbf';
+        banner.textContent = '✓ Notification sent to chris@enhance.physio';
+      } else {
+        banner.style.background = '#fdf0ef';
+        banner.style.color = '#c0392b';
+        banner.style.border = '1px solid #f1948a';
+        banner.textContent = 'Email notification failed — please screenshot this page and email it to chris@enhance.physio';
+      }
+      banner.style.display = 'block';
+    } catch(e) {
+      const banner = document.getElementById('submitBanner');
+      banner.style.background = '#fdf0ef';
+      banner.style.color = '#c0392b';
+      banner.style.border = '1px solid #f1948a';
+      banner.textContent = 'No internet connection — please screenshot this page and email it to chris@enhance.physio';
+      banner.style.display = 'block';
+    }
+
+    // Populate summary card
+    document.getElementById('sum-name').textContent  = name;
+    document.getElementById('sum-uni').textContent   = uni;
+    document.getElementById('sum-site').textContent  = site;
+    document.getElementById('sum-dates').textContent = startFmt + ' — ' + endFmt;
+    document.getElementById('sum-date').textContent  = completedDate;
+
+    // Advance to completion screen
+    completed.add('acknowledgement');
+    document.getElementById('chk-acknowledgement').textContent = '✓';
+    document.getElementById('nav-acknowledgement').classList.add('completed');
+    updateProgress();
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('sec-complete').classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    window.scrollTo(0,0);
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  // Init
+  document.getElementById('ackDate').textContent = new Date().toLocaleDateString('en-AU', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+</script>
+
+</body>
+</html>
