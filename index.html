@@ -131,7 +131,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--lgrey);color:var(--navy);
 .btn-cancel{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;padding:10px 16px;border-radius:9px;border:1px solid var(--border);background:var(--lgrey);cursor:pointer;color:var(--slate)}
 .btn-cancel:hover{background:var(--mgrey)}
 .success-state{padding:2rem 1.5rem;text-align:center}
-.success-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:22px}
+.success-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:22px;color:#fff}
 .success-title{font-size:17px;font-weight:600;color:var(--navy);margin-bottom:6px}
 .success-sub{font-size:13px;color:var(--slate);line-height:1.6;margin-bottom:1.1rem}
 .success-detail{background:var(--lgrey);border-radius:10px;padding:1rem;text-align:left;font-size:12px;color:var(--slate);line-height:1.7;margin-bottom:1.1rem;max-height:260px;overflow-y:auto}
@@ -139,6 +139,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--lgrey);color:var(--navy);
 .btn-done{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:9px 20px;border-radius:9px;border:none;cursor:pointer;background:var(--navy);color:white;transition:opacity .15s}
 .btn-done:hover{opacity:.88}
 .btn-done-sec{background:var(--slate)}
+.btn-email{background:var(--teal)}
+.btn-slack{background:var(--purple)}
+.success-route{font-size:12px;color:var(--slate);line-height:1.6;margin-bottom:.85rem;text-align:center}
+.slack-pick{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:.85rem}
+.slack-pick-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.slack-pick label{font-size:12px;font-weight:600;color:var(--navy)}
+.slack-pick .form-select{width:auto;min-width:240px}
+.slack-pick .form-hint{margin:0;text-align:center;max-width:440px}
+.success-btns .btn-done{white-space:nowrap}
 .star-row{display:flex;gap:8px;margin-top:4px}
 .star-opt{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--slate);cursor:pointer}
 .star-opt input{accent-color:var(--teal)}
@@ -403,6 +412,253 @@ const DOCS = [
   {num:'24',title:'CD Quarterly Report',area:'cd',color:'#0B2B40',badge:'Submit',desc:'Landscape KPI dashboard plus portrait narrative covering all six CD responsibility areas.',hasForm:true,fid:'cd-report'},
 ];
 
+// ── RECIPIENTS & ROUTING ─────────────────────────────────────────────────────
+// Edit staff details and which form goes to whom here. Nothing is sent to a server:
+// email opens a mailto: draft in the clinician's own mail app, and Slack opens a DM.
+const SLACK_WORKSPACE_HOST = 'enhance-physiotherapy.slack.com';
+
+const RECIPIENTS = {
+  chris: {
+    order: 1,
+    name: 'Chris Oats',
+    role: 'Clinical Director / Clinical Lead',
+    roles: ['clinical-director', 'clinical-lead'],
+    email: 'chris@enhance.physio',
+    slackId: 'U0236QKUD35',
+    clinician: true,
+    // Clinical Lead for every clinic.
+    clinicalLeadFor: ['Albury', 'Gold Coast', 'Melbourne']
+  },
+  matt: {
+    order: 2,
+    name: 'Matt Lewington',
+    role: 'CEO',
+    roles: ['ceo'],
+    email: 'matt@enhance.physio',
+    slackId: 'U023CP63LHJ',
+    clinician: false
+  },
+  nathan: {
+    order: 3,
+    name: 'Nathan Scaria',
+    role: 'COO',
+    roles: ['coo'],
+    email: 'nathan@enhance.physio',
+    slackId: 'U0236J877FU',
+    clinician: false
+  }
+};
+
+const FORM_ROUTING = {
+  // Mentor / case discussion: any configured clinician. Defaults to Chris Oats.
+  // Email Ccs the Clinical Lead and Clinical Director when they are not already the recipient.
+  'case-study': {label: 'Who do you want to discuss with?', mode: 'pick', defaultId: 'chris', ccRoles: ['clinical-lead', 'clinical-director']},
+  'case-review': {label: 'Send to', hint: 'Clinical Director.', mode: 'roles', roles: ['clinical-director']},
+  'shadowing-req': {label: 'Send to', hint: 'Your Clinical Lead arranges the session. Do not send this to the host.', mode: 'clinical-lead'},
+  'shadowing-out': {label: 'Send to', hint: 'Your Clinical Lead, within 24 hours.', mode: 'clinical-lead'},
+  'reflection': {label: 'Send to', hint: 'Your Clinical Lead, within 24 hours.', mode: 'clinical-lead'},
+  'self-eval': {label: 'Send to', hint: 'Your Clinical Lead, within 24 hours.', mode: 'clinical-lead'},
+  'observation': {label: 'Send to', hint: 'Clinical Director.', mode: 'roles', roles: ['clinical-director']},
+  'cpd': {label: 'Send to', hint: 'Your Clinical Lead forwards this to the Clinical Director.', mode: 'clinical-lead'},
+  'innovation': {label: 'Send to', hint: 'Clinical Director.', mode: 'roles', roles: ['clinical-director']},
+  // Quarterly director report: Clinical Director, CEO and COO.
+  'cd-report': {label: 'Send to', hint: 'Quarterly report goes to the Clinical Director, CEO and COO. Email is addressed to everyone selected. Slack opens one DM.', mode: 'all', roles: ['clinical-director', 'ceo', 'coo'], slackDefault: 'chris'}
+};
+
+function recipientEntries(){
+  return Object.entries(RECIPIENTS).map(([id, p]) => ({id, ...p})).sort((a, b) => (a.order || 0) - (b.order || 0));
+}
+function person(id){
+  const p = RECIPIENTS[id];
+  return p ? {id, ...p} : null;
+}
+function peopleForForm(fid, opts){
+  const route = FORM_ROUTING[fid];
+  if(!route) return [];
+  const all = recipientEntries();
+  const site = (opts && opts.ignoreSite) ? '' : (G('f-site')?.value || '');
+  let list = [];
+  if(route.mode === 'pick') list = all.filter(p => p.clinician);
+  else if(route.mode === 'all') list = all.filter(p => (p.roles || []).some(r => (route.roles || []).includes(r)));
+  else if(route.mode === 'clinical-lead') list = all.filter(p => (p.roles || []).includes('clinical-lead') && (!site || !p.clinicalLeadFor || p.clinicalLeadFor.includes(site)));
+  else if(route.mode === 'roles') list = all.filter(p => (p.roles || []).some(r => (route.roles || []).includes(r)));
+  return list;
+}
+function esc(s){
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function textToHtml(s){return esc(s).replace(/\n/g, '<br>');}
+function optionsHtml(people, selected){
+  const chosen = new Set(Array.isArray(selected) ? selected : (selected ? [selected] : []));
+  return people.map(p => `<option value="${esc(p.id)}"${chosen.has(p.id) ? ' selected' : ''}>${esc(p.name)} — ${esc(p.role)}</option>`).join('');
+}
+function mentorSelectHtml(){
+  const route = FORM_ROUTING['case-study'];
+  const people = peopleForForm('case-study');
+  const selected = (route.defaultId && people.some(p => p.id === route.defaultId)) ? route.defaultId : (people[0] && people[0].id);
+  return `<select class="form-select" id="f-send-to" onchange="csPreview()">${optionsHtml(people, selected)}</select>`;
+}
+function recipientBlock(fid){
+  const route = FORM_ROUTING[fid];
+  if(!route || route.mode === 'pick') return '';
+  const people = peopleForForm(fid, {ignoreSite: true});
+  const hint = route.hint ? `<span class="form-hint">${esc(route.hint)}</span>` : '';
+  const label = esc(route.label || 'Send to');
+  if(route.mode === 'all'){
+    const boxes = people.map(p => `<label class="check-item"><input type="checkbox" name="route-to" value="${esc(p.id)}" checked> ${esc(p.name)} — ${esc(p.role)}</label>`).join('');
+    return `<div class="form-row"><label class="form-label">${label}<span class="req">*</span></label>${hint}<div class="check-group">${boxes}</div></div>`;
+  }
+  const selected = (route.defaultId && people.some(p => p.id === route.defaultId)) ? route.defaultId : (people[0] && people[0].id);
+  return `<div class="form-row"><label class="form-label">${label}<span class="req">*</span></label>${hint}<select class="form-select" id="f-send-to">${optionsHtml(people, selected)}</select></div>`;
+}
+function emailRecipients(){
+  const route = FORM_ROUTING[curForm];
+  if(!route) return [];
+  if(route.mode === 'all'){
+    const boxes = [...document.querySelectorAll('input[name="route-to"]')];
+    let ids = boxes.filter(b => b.checked).map(b => b.value);
+    if(!boxes.length){
+      const sel = G('f-send-to');
+      ids = sel ? [...sel.selectedOptions].map(o => o.value) : [];
+    }
+    if(!ids.length) ids = peopleForForm(curForm, {ignoreSite: true}).map(p => p.id);
+    return ids.map(person).filter(Boolean);
+  }
+  const id = G('f-send-to')?.value || route.defaultId;
+  const p = person(id);
+  return p ? [p] : [];
+}
+function slackPerson(){
+  const route = FORM_ROUTING[curForm];
+  const picked = G('f-slack-to')?.value;
+  if(picked && person(picked)) return person(picked);
+  if(route && route.mode === 'all' && person(route.slackDefault)) return person(route.slackDefault);
+  return emailRecipients()[0] || null;
+}
+function ccPeople(toPeople){
+  const route = FORM_ROUTING[curForm];
+  if(!route || !route.ccRoles || !route.ccRoles.length) return [];
+  const site = G('f-site')?.value || '';
+  const toIds = new Set((toPeople || []).map(p => p.id));
+  return recipientEntries().filter(p => {
+    if(toIds.has(p.id)) return false;
+    const hit = (p.roles || []).filter(r => route.ccRoles.includes(r));
+    if(!hit.length) return false;
+    const onlyLead = hit.every(r => r === 'clinical-lead');
+    if(onlyLead && site && p.clinicalLeadFor && !p.clinicalLeadFor.includes(site)) return false;
+    return true;
+  });
+}
+function joinSubject(...parts){
+  return parts.map(p => (p || '').trim()).filter(Boolean).join(' — ');
+}
+// Subjects must not include patient name or date of birth. Those stay in the body.
+function formSubject(fid){
+  const v = id => G(id)?.value.trim() || '';
+  const fd = id => {const d = v(id); return d ? d.split('-').reverse().join('/') : '';};
+  switch(fid){
+    case 'case-study': return joinSubject('Case Study Request', v('f-site'), fd('f-adate'));
+    case 'case-review': return joinSubject('Clinical Case Review', v('f-site'));
+    case 'shadowing-req': return joinSubject('Shadowing Request', v('f-topic'));
+    case 'shadowing-out': return joinSubject('Shadowing Outcome', v('f-topic'));
+    case 'reflection': return joinSubject('Reflection Record', v('f-topic'));
+    case 'self-eval': return joinSubject('Presenter Self-Evaluation', v('f-topic'));
+    case 'observation': return joinSubject('Facilitation Observation', v('f-topic'));
+    case 'cpd': return joinSubject('PD Application', v('f-course'));
+    case 'innovation': return joinSubject('Innovation Proposal', v('f-title'));
+    case 'cd-report': return joinSubject('CD Quarterly Report', [v('f-q'), v('f-year')].filter(Boolean).join(' '));
+    default: return fallbackSubject(fid);
+  }
+}
+function fallbackSubject(fid){
+  const titles = {
+    'case-study': 'Case Study Request',
+    'case-review': 'Clinical Case Review',
+    'shadowing-req': 'Shadowing Request',
+    'shadowing-out': 'Shadowing Outcome Record',
+    'reflection': 'Reflection and Implementation Record',
+    'self-eval': 'Presenter Self-Evaluation',
+    'observation': 'Facilitation Observation',
+    'cpd': 'Professional Development Application',
+    'innovation': 'Service Innovation Proposal',
+    'cd-report': 'CD Quarterly Report'
+  };
+  return titles[fid] || 'Clinical Hub message';
+}
+function identInText(text, ident){
+  const value = (ident || '').trim();
+  if(value.length < 2) return false;
+  const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[^A-Za-z0-9])' + escaped + '([^A-Za-z0-9]|$)', 'i').test(text || '');
+}
+function messageSubject(){
+  const patient = G('f-patient')?.value.trim() || '';
+  const dob = G('f-dob')?.value.trim() || '';
+  let s = formSubject(curForm);
+  if(identInText(s, patient) || identInText(s, dob)) s = fallbackSubject(curForm);
+  if(identInText(s, patient) || identInText(s, dob)) s = 'Clinical Hub message';
+  return s;
+}
+function messageBody(){
+  return (window._finalMsg || '').replace(/^Subject:[^\n]*\n+/, '');
+}
+function sendChoiceLine(){
+  const route = FORM_ROUTING[curForm];
+  const names = emailRecipients().map(p => p.name).join(', ') || 'the selected recipient';
+  if(route && route.mode === 'all') return `Use Copy or Send via email to reach ${names}. Send via Slack copies the message and opens a DM with the person you choose.`;
+  return `Use Copy, Send via email, or Send via Slack to reach ${names}.`;
+}
+function successRouteHtml(){
+  const to = emailRecipients();
+  const cc = ccPeople(to);
+  const route = FORM_ROUTING[curForm];
+  let slackPick = '';
+  if(route && route.mode === 'all'){
+    const slackDefault = (route.slackDefault && to.some(p => p.id === route.slackDefault)) ? route.slackDefault : (to[0] && to[0].id);
+    slackPick = `<div class="slack-pick"><div class="slack-pick-row"><label for="f-slack-to">Slack DM with</label><select class="form-select" id="f-slack-to">${optionsHtml(to, slackDefault)}</select></div><span class="form-hint">Email is addressed to everyone in To. Slack opens one direct message.</span></div>`;
+  }
+  const toLine = `To: ${to.map(p => `${p.name} (${p.email})`).join(', ')}`;
+  const ccLine = cc.length ? `Cc: ${cc.map(p => `${p.name} (${p.email})`).join(', ')}` : '';
+  return `<div class="success-route"><div>${esc('Subject: ' + messageSubject())}</div><div>${esc(toLine)}</div>${ccLine ? `<div>${esc(ccLine)}</div>` : ''}</div>${slackPick}`;
+}
+function refreshLeadOptions(){
+  const route = FORM_ROUTING[curForm];
+  if(!route || route.mode !== 'clinical-lead') return;
+  const sel = G('f-send-to');
+  if(!sel) return;
+  const prev = sel.value;
+  const people = peopleForForm(curForm);
+  const keep = people.some(p => p.id === prev) ? prev : (people[0] && people[0].id);
+  sel.innerHTML = optionsHtml(people, keep);
+}
+function setSuccessSub(text){
+  const el = G('success-sub');
+  if(el) el.textContent = text;
+}
+function flashBtn(btn, temp, restore){
+  if(!btn) return;
+  btn.textContent = temp;
+  setTimeout(() => {btn.textContent = restore;}, 2000);
+}
+function openHref(url, newTab){
+  const a = document.createElement('a');
+  a.href = url;
+  if(newTab){a.target = '_blank'; a.rel = 'noopener noreferrer';}
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+function buildMailto(to, cc, subject, body){
+  // mailto only — not an Outlook web or desktop link — so the draft opens in the clinician's own mail app.
+  const crlf = body.replace(/\r?\n/g, '\r\n');
+  let href = `mailto:${to.map(p => p.email).join(',')}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(crlf)}`;
+  if(cc.length) href += `&cc=${cc.map(p => p.email).join(',')}`;
+  return href;
+}
+function slackDmUrl(slackId){
+  return `https://${SLACK_WORKSPACE_HOST}/app_redirect?channel=${encodeURIComponent(slackId)}`;
+}
+
 // ── FORM DEFINITIONS ──────────────────────────────────────────────────────────
 const FORMS = {
 
@@ -420,7 +676,7 @@ const FORMS = {
   <div><label class="form-label">Your name<span class="req">*</span></label><input class="form-input" id="f-name" placeholder="Full name" oninput="csPreview()"></div>
   <div><label class="form-label">Site<span class="req">*</span></label><select class="form-select" id="f-site" onchange="csPreview()"><option value="">Select…</option><option>Albury</option><option>Gold Coast</option><option>Melbourne</option></select></div>
 </div>
-<div class="form-row" style="margin-top:1rem"><label class="form-label">Who do you want to discuss with?<span class="req">*</span></label><span class="form-hint">Any clinician — CD and Clinical Lead will be CC'd.</span><input class="form-input" id="f-recipient" placeholder="e.g. Chris Oats" oninput="csPreview()"></div>
+<div class="form-row" style="margin-top:1rem"><label class="form-label">Who do you want to discuss with?<span class="req">*</span></label><span class="form-hint">Any clinician. Defaults to Chris Oats. Email Ccs your Clinical Lead and Clinical Director when you choose someone else.</span>${mentorSelectHtml()}</div>
 <div class="form-divider">Patient details</div>
 <div class="form-row-2">
   <div><label class="form-label">First name<span class="req">*</span></label><input class="form-input" id="f-patient" placeholder="e.g. Tom" oninput="csPreview()"></div>
@@ -448,23 +704,28 @@ const FORMS = {
   <div class="preview-panel" id="cs-preview-text"></div>
 </div>`;},
   validate(){
-    const req=['f-name','f-site','f-recipient','f-patient','f-dob','f-condition','f-adate','f-atime','f-q1'];
+    const req=['f-name','f-site','f-send-to','f-patient','f-dob','f-condition','f-adate','f-atime','f-q1'];
     let ok=true; req.forEach(id=>{const el=G(id);if(el&&!el.value.trim()){el.classList.add('error');ok=false;}else if(el)el.classList.remove('error');});
     if(!window._chan){alert('Please select Slack or email.');return false;} return ok;
   },
   generate(){
     const v=id=>G(id)?.value.trim()||'';
+    const toName=person(v('f-send-to'))?.name||'[name]';
     const d=v('f-adate'),tm=v('f-atime');
     const fd=d?d.split('-').reverse().join('/'):'';
     const ft=tm?(()=>{const h=parseInt(tm.split(':')[0]),m=tm.split(':')[1];return h>12?`${h-12}:${m}pm`:h===12?`12:${m}pm`:`${h||12}:${m}am`})():'';
     const qs=[v('f-q1'),v('f-q2'),v('f-q3')].filter(Boolean);
     const appt=[fd,ft].filter(Boolean).join(' at ');
     if(window._chan==='slack'){
-      return `Hi ${v('f-recipient')||'[name]'},\n\nI'd like to request a quick case study discussion before my next appointment.\n\nPatient: ${v('f-patient')||'[name]'}, ${v('f-dob')||'[DOB]'}\nMain condition: ${v('f-condition')||'[condition]'}\nAppointment: ${appt||'[date and time]'}\n\nClinical questions:\n${qs.length?qs.map((q,i)=>`${i+1}. ${q}`).join('\n'):'1. [Your question]'}\n\nAre you available before ${fd||'[appointment date]'}? Even 10–15 minutes would be very helpful.\n\nThanks, ${v('f-name')||'[Your name]'}`;
+      return `Hi ${toName},\n\nI'd like to request a quick case study discussion before my next appointment.\n\nPatient: ${v('f-patient')||'[name]'}, ${v('f-dob')||'[DOB]'}\nMain condition: ${v('f-condition')||'[condition]'}\nAppointment: ${appt||'[date and time]'}\n\nClinical questions:\n${qs.length?qs.map((q,i)=>`${i+1}. ${q}`).join('\n'):'1. [Your question]'}\n\nAre you available before ${fd||'[appointment date]'}? Even 10–15 minutes would be very helpful.\n\nThanks, ${v('f-name')||'[Your name]'}`;
     }
-    return `Subject: Case Study Request — ${v('f-patient')||'[Patient]'}, ${v('f-dob')||'[DOB]'} — ${fd||'[Date]'}\n\nHi ${v('f-recipient')||'[name]'},\n\nI'm writing to request a brief case study discussion before my next appointment.\n\nPatient: ${v('f-patient')||'[name]'}, ${v('f-dob')||'[DOB]'}\nMain condition: ${v('f-condition')||'[condition]'}\nAppointment: ${appt||'[date and time]'}\n${v('f-bg')?'\nBackground:\n'+v('f-bg')+'\n':''}\nClinical questions:\n${qs.map((q,i)=>`${i+1}. ${q}`).join('\n')}\n${v('f-avail')?'\nAvailable times:\n'+v('f-avail')+'\n':'\n'}If those don't suit, let me know what works.\n\nKind regards,\n${v('f-name')||'[Your name]'}\n${v('f-site')||''}`;
+    return `Subject: ${messageSubject()}\n\nHi ${toName},\n\nI'm writing to request a brief case study discussion before my next appointment.\n\nPatient: ${v('f-patient')||'[name]'}, ${v('f-dob')||'[DOB]'}\nMain condition: ${v('f-condition')||'[condition]'}\nAppointment: ${appt||'[date and time]'}\n${v('f-bg')?'\nBackground:\n'+v('f-bg')+'\n':''}\nClinical questions:\n${qs.map((q,i)=>`${i+1}. ${q}`).join('\n')}\n${v('f-avail')?'\nAvailable times:\n'+v('f-avail')+'\n':'\n'}If those don't suit, let me know what works.\n\nKind regards,\n${v('f-name')||'[Your name]'}\n${v('f-site')||''}`;
   },
-  successMsg(){return `Copy and paste into ${window._chan==='slack'?'Slack':'your email client'}. CC your Clinical Lead and chris@enhance.physio.`;}
+  successMsg(){
+    const cc=ccPeople(emailRecipients());
+    const ccBit=cc.length?` Email will Cc ${cc.map(p=>p.name).join(' and ')}.`:'';
+    return sendChoiceLine()+ccBit;
+  }
 },
 
 'case-review':{
@@ -533,7 +794,7 @@ const FORMS = {
     const fd=v('f-first')?v('f-first').split('-').reverse().join('/'):'Not specified';
     return `CLINICAL CASE REVIEW REQUEST\nDate: ${new Date().toLocaleDateString('en-AU')}\n\nCLINICIAN: ${v('f-name')}, ${v('f-site')}\nPATHWAY: ${pathway}\n\nPATIENT: ${v('f-patient')}, Age: ${v('f-age')}\nCondition: ${v('f-condition')}\nFirst seen: ${fd} | Sessions: ${v('f-sessions')||'—'} | Funding: ${v('f-funding')||'—'}\n\nMAIN CONCERNS:\n${concerns.length?concerns.map(c=>`• ${c}`).join('\n'):'None selected'}\n${v('f-detail')?'\nDETAIL:\n'+v('f-detail')+'\n':''}\nOUTCOMES SOUGHT:\n${outcomes.length?outcomes.map(o=>`• ${o}`).join('\n'):'None selected'}\n${v('f-treatment')?'\nCURRENT TREATMENT:\n'+v('f-treatment'):''}`;
   },
-  successMsg(){return 'Send to chris@enhance.physio. The CD will acknowledge within 48 hours and return written recommendations within one week.';}
+  successMsg(){return sendChoiceLine()+' The CD will acknowledge within 48 hours and return written recommendations within one week.';}
 },
 
 'shadowing-req':{
@@ -556,7 +817,7 @@ const FORMS = {
     const v=id=>G(id)?.value.trim()||'';
     return `SHADOWING REQUEST\nDate: ${new Date().toLocaleDateString('en-AU')}\n\nFrom: ${v('f-name')}, ${v('f-site')}\nPreferred host: ${v('f-host')||'No preference'}\n\nTOPIC: ${v('f-topic')}\n\nLEARNING OBJECTIVE:\nAfter this session I will be able to ${v('f-obj')}\n${v('f-why')?'\nWHY NOW:\n'+v('f-why')+'\n':''}\nPREFERRED DATES: ${v('f-dates')||'Flexible'}`;
   },
-  successMsg(){return 'Send this request to your Clinical Lead. They will arrange the session and confirm details — same business day.';}
+  successMsg(){return sendChoiceLine()+' They will arrange the session and confirm details — same business day.';}
 },
 
 'shadowing-out':{
@@ -595,7 +856,7 @@ const FORMS = {
     const debrief=document.querySelector('input[name="debrief"]:checked')?.value||'—';
     return `SHADOWING OUTCOME RECORD\nDate: ${fd} | Site: ${v('f-site')||'—'}\nObserver: ${v('f-observer')} | Host: ${v('f-host')}\nTopic: ${v('f-topic')}\n\nLEARNING OBJECTIVE MET: ${met}\n\nKEY LEARNING:\n${v('f-learning')}\n\nBEHAVIOUR CHANGE:\n${v('f-change')}\n\nDebrief conducted: ${debrief}`;
   },
-  successMsg(){return 'Submit to your Clinical Lead within 24 hours — they will forward to the CD.';}
+  successMsg(){return sendChoiceLine()+' Submit within 24 hours — they will forward it to the CD.';}
 },
 
 'reflection':{
@@ -639,7 +900,7 @@ ${['The content was clinically relevant to my current practice','The session was
     const qs=['Clinically relevant','Right level','Clarity','Q&A','Identified action','Would recommend'];
     return `REFLECTION & IMPLEMENTATION RECORD\n${v('f-name')} | ${fd} | ${v('f-topic')} | Facilitator: ${v('f-fac')||'—'}\n\n1. THE ONE THING:\n${v('f-one')}\n\n2. IMPLEMENTATION:\n2a. What: ${v('f-what')}\n2b. When: ${v('f-when')}\n2c. How I'll know: ${v('f-measure')||'Not specified'}\n\n3. STILL UNCLEAR:\n${v('f-unclear')||'Nothing — confident to apply'}\n\nSESSION EVALUATION:\n${qs.map((q,i)=>`${q}: ${ratings[i]}/5`).join(' | ')}\nOverall: ${overall}/5\n${v('f-good')?'Worked well: '+v('f-good'):''}${v('f-improve')?'\nImprove: '+v('f-improve'):''}`;
   },
-  successMsg(){return 'Submit to your Clinical Lead within 24 hours.';}
+  successMsg(){return sendChoiceLine()+' Submit within 24 hours.';}
 },
 
 'self-eval':{
@@ -686,7 +947,7 @@ ${['I explained the content clearly','I pitched the session at the right level',
     const conf=document.querySelector('input[name="conf"]:checked')?.value||'—';
     return `PRESENTER SELF-EVALUATION\n${v('f-name')} | ${fd} | ${v('f-topic')} | ${v('f-type')||''} | Attendees: ${v('f-att')||'—'}\n\n1. PREPARATION:\n${v('f-prep')}\n\n2. DELIVERY:\n${dlq.map((q,i)=>`${q}: ${dl[i]}/5`).join(' | ')}\n\n3. HONEST MOMENT:\nStrongest: ${v('f-strength')}\nWould change: ${v('f-change')}\n\n4. IMPACT: Session achieved purpose — ${achieved}\n\n5. COMMITMENT:\n${v('f-commit')}\n\nOverall confidence: ${conf}/5`;
   },
-  successMsg(){return 'Submit to your Clinical Lead within 24 hours. Reviewed by CD alongside participant scores.';}
+  successMsg(){return sendChoiceLine()+' Submit within 24 hours. Reviewed by the CD alongside participant scores.';}
 },
 
 'observation':{
@@ -726,7 +987,7 @@ ${[['Psychological safety','Did the facilitator create an environment where part
     const ready=document.querySelector('input[name="ready"]:checked')?.value||'—';
     return `FACILITATION OBSERVATION TOOL\nObserver: ${v('f-observer')} | Date: ${fd}\nFacilitator: ${v('f-fac')} | Topic: ${v('f-topic')} | Type: ${v('f-type')||'—'}\n\nDOMAIN RATINGS:\n${domains.join(' | ')}\n\nSTRENGTHS:\n${v('f-strengths')||'Not specified'}\n\nDEVELOPMENT AREAS:\n${v('f-develop')||'Not specified'}\n\nREADINESS: ${ready}`;
   },
-  successMsg(){return 'File in the governance folder and log in Doc 19 (event type: Shadowing). Share development areas with the facilitator in a debrief.';}
+  successMsg(){return sendChoiceLine()+' File it in the governance folder and log it in Doc 19 (event type: Shadowing). Share development areas with the facilitator in a debrief.';}
 },
 
 'cpd':{
@@ -777,7 +1038,7 @@ ${[['Psychological safety','Did the facilitator create an environment where part
     const skills=[v('f-s1'),v('f-s2'),v('f-s3')].filter(Boolean);
     return `PROFESSIONAL DEVELOPMENT APPLICATION\nDate: ${fd(v('f-date'))}\nApplicant: ${v('f-name')} | ${v('f-pos')||''} | ${v('f-site')}\n\nCOURSE: ${v('f-course')}\nProvider: ${v('f-provider')}\nDates: ${fd(v('f-start'))} to ${fd(v('f-end'))}\nFormat: ${v('f-format')||'—'} | Cost: $${v('f-cost')} | CPD hours: ${v('f-hours')||'—'}\n\nKNOWLEDGE GAP:\n${v('f-gap')}\n\nSKILLS TO ACHIEVE:\n${skills.map((s,i)=>`${i+1}. ${s}`).join('\n')}\n\nPERSONAL BENEFIT:\n${v('f-personal')}\n\nBUSINESS BENEFIT:\n${v('f-biz')}\n\nIMPLEMENTATION COMMITMENT:\n${v('f-commit')}\n${v('f-measure')?'\nMEASUREMENT:\n'+v('f-measure'):''}\n\n⚠ PAYBACK CLAUSE ACKNOWLEDGED — 100% of course fee repayable if voluntarily leaving within 12 months.`;
   },
-  successMsg(){return 'Submit to your Clinical Lead for forwarding to the CD. Do not enrol or pay before receiving written approval.';}
+  successMsg(){return sendChoiceLine()+' Your Clinical Lead forwards this to the CD. Do not enrol or pay before receiving written approval.';}
 },
 
 'innovation':{
@@ -815,7 +1076,7 @@ ${[['Patient outcomes & clinical quality<span class="req">*</span>','How will th
     const crits=['Patient outcomes & clinical quality','Revenue & business sustainability','Staff capability & retention','Competitive differentiation'];
     return `SERVICE INNOVATION PROPOSAL\nDate: ${new Date().toLocaleDateString('en-AU')}\nProposer: ${v('f-name')} | ${v('f-site')}\n\nINNOVATION: ${v('f-title')}\nCategory: ${v('f-cat')} | Cost: $${v('f-cost')} | Tier: ${tier}\n\nPROBLEM:\n${v('f-problem')}\n${v('f-current')?'\nCURRENT APPROACH:\n'+v('f-current')+'\n':''}\nTHE CASE:\n${crits.map((c,i)=>`${c}:\n${v('f-c'+i)}`).join('\n\n')}\n\nSUCCESS MEASURE (90 days):\n${v('f-success')}`;
   },
-  successMsg(){return 'Submit to chris@enhance.physio. The CD will respond within one week. Do not spend any money before receiving written approval.';}
+  successMsg(){return sendChoiceLine()+' The CD will respond within one week. Do not spend any money before receiving written approval.';}
 },
 
 'cd-report':{
@@ -854,7 +1115,7 @@ ${areas.map((a,i)=>`<div class="form-divider">${i+1}. ${a}</div><div class="form
     const orag=document.querySelector('input[name="orag"]:checked')?.value||'—';
     return `CD QUARTERLY REPORT — ${v('f-q')} ${v('f-year')}\nSubmitted: ${fd}\n\nOVERALL RAG: ${orag}\n"${v('f-summary')}"\n\nKPI DASHBOARD:\n${kRows.join('\n')}\n\nNARRATIVE:\n${narrative.join('\n\n')}`;
   },
-  successMsg(){return 'Submit to the Directors and CEO/COO. File the completed form in the governance folder.';}
+  successMsg(){return sendChoiceLine()+' File the completed form in the governance folder.';}
 },
 
 };
@@ -881,7 +1142,7 @@ function csPreview(){
   if(!wrap||!pre) return;
   wrap.style.display='block';
   if(lbl)lbl.textContent=window._chan==='slack'?'Slack message preview':'Email preview';
-  pre.innerHTML=FORMS['case-study'].generate().replace(/\n/g,'<br>');
+  pre.innerHTML=textToHtml(FORMS['case-study'].generate());
 }
 
 // ── MODAL ENGINE ──────────────────────────────────────────────────────────────
@@ -897,7 +1158,7 @@ function openForm(fid){
       <div><div class="modal-doc">${F.doc}</div><div class="modal-title">${F.title}</div><div class="modal-sub">${F.sub}</div></div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">${F.html()}</div>
+    <div class="modal-body">${recipientBlock(fid)}${F.html()}</div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-submit" style="background:${F.color}" onclick="submitForm()">Generate message ↗</button>
@@ -924,14 +1185,18 @@ function submitForm(){
   G('success-state').innerHTML=`
   <div class="success-state">
     <div class="success-icon" style="background:${F.color}">✓</div>
-    <div class="success-title">Ready to submit</div>
-    <div class="success-sub">${F.successMsg()}</div>
-    <div class="success-detail">${msg.replace(/\n/g,'<br>')}</div>
+    <div class="success-title">Ready to send</div>
+    <div class="success-sub" id="success-sub"></div>
+    <div class="success-detail">${textToHtml(msg)}</div>
+    ${successRouteHtml()}
     <div class="success-btns">
-      <button class="btn-done" onclick="copyMsg()" id="copy-btn">📋 Copy</button>
-      <button class="btn-done btn-done-sec" onclick="closeModal()">Done</button>
+      <button type="button" class="btn-done" onclick="copyMsg()" id="copy-btn">📋 Copy</button>
+      <button type="button" class="btn-done btn-email" onclick="sendEmail()" id="email-btn">✉️ Send via email</button>
+      <button type="button" class="btn-done btn-slack" onclick="sendSlack()" id="slack-btn">💬 Send via Slack</button>
+      <button type="button" class="btn-done btn-done-sec" onclick="closeModal()">Done</button>
     </div>
   </div>`;
+  setSuccessSub(F.successMsg());
 }
 
 function copyMsg(){
@@ -939,6 +1204,47 @@ function copyMsg(){
   navigator.clipboard.writeText(window._finalMsg).then(()=>{
     const btn=G('copy-btn');
     if(btn){btn.textContent='✓ Copied!';setTimeout(()=>{btn.textContent='📋 Copy'},2000);}
+  });
+}
+
+function sendEmail(){
+  const to=emailRecipients();
+  if(!to.length){setSuccessSub('Choose a recipient, then try Send via email again.');return;}
+  const cc=ccPeople(to);
+  const subject=messageSubject();
+  const body=messageBody();
+  const names=to.map(p=>p.name).join(', ');
+  const ccNote=cc.length?` Cc: ${cc.map(p=>p.name).join(', ')}.`:'';
+  let href=buildMailto(to, cc, subject, body);
+  let longNote='';
+  let copyPromise=null;
+  if(href.length>1900){
+    href=buildMailto(to, cc, subject, 'The full message is on your clipboard. Paste it here, then send.');
+    longNote=' The message was too long for an email link, so it was copied — paste it into the draft.';
+    try{copyPromise=navigator.clipboard.writeText(body);}
+    catch(e){copyPromise=Promise.reject(e);}
+  }
+  openHref(href, false);
+  setSuccessSub(`Email draft opened to ${names} in your mail app.${ccNote} Send it there so it is saved in your Sent items.${longNote}`);
+  flashBtn(G('email-btn'), '✓ Draft opened', '✉️ Send via email');
+  if(copyPromise) copyPromise.catch(()=>{
+    setSuccessSub(`Email draft opened to ${names} in your mail app.${ccNote} The message was too long to prefill. Copy did not succeed — use Copy, then paste it into the draft.`);
+  });
+}
+
+function sendSlack(){
+  const who=slackPerson();
+  if(!who||!who.slackId){setSuccessSub('No Slack recipient is configured for this form.');return;}
+  const body=messageBody();
+  let copyPromise;
+  try{copyPromise=navigator.clipboard.writeText(body);}
+  catch(e){copyPromise=Promise.reject(e);}
+  // Copy is started first. The DM opens in this same click so the browser allows the new tab.
+  openHref(slackDmUrl(who.slackId), true);
+  setSuccessSub(`Message copied. Slack DM with ${who.name} is open — paste and send.`);
+  flashBtn(G('slack-btn'), '✓ Copied & opened', '💬 Send via Slack');
+  copyPromise.catch(()=>{
+    setSuccessSub(`Slack DM with ${who.name} is open. Copy did not succeed — use Copy, then paste into the DM.`);
   });
 }
 
@@ -1078,6 +1384,9 @@ function populateDlGrids(){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='f-site') refreshLeadOptions();
+});
 populateGrids();
 populateKPIs();
 populateDlGrids();
